@@ -1,0 +1,103 @@
+To create an SLA (Service Level Agreement) report for your Power BI workspace showing the **last refresh time**, **duration**, and other related details for all reports, you can follow the below plan.
+
+---
+
+## **1. Requirements:**
+- Fetch the **last refresh time** and **duration** of all reports/datasets in your Power BI workspace.
+- Summarize the data in an SLA report.
+
+---
+
+## **2. Methods to Get Refresh Data**
+
+### **A. Use Power BI REST APIs**
+Power BI REST APIs can provide details about datasets and their refresh history.
+
+#### **API Endpoints to Use:**
+1. **Get Datasets in a Group:**
+   - Endpoint: `GET https://api.powerbi.com/v1.0/myorg/groups/{groupId}/datasets`
+   - Fetch the list of datasets in your workspace.
+
+2. **Get Dataset Refresh History:**
+   - Endpoint: `GET https://api.powerbi.com/v1.0/myorg/groups/{groupId}/datasets/{datasetId}/refreshes`
+   - Provides details like **last refresh time**, **duration**, and status.
+
+#### **Steps to Implement:**
+1. **Generate an Access Token:**
+   - Use **Azure AD** to authenticate and get an access token for Power BI REST APIs.
+2. **Retrieve Workspace Details:**
+   - Fetch all datasets in your workspace using the **datasets API**.
+3. **Fetch Refresh Details:**
+   - For each dataset, use the **refreshes API** to get the last refresh time and duration.
+
+---
+
+### **B. Automate with Power BI Dataflows or Power Automate**
+You can use **Power Automate** or create a **Power BI Dataflow** to automate fetching this data periodically.
+
+#### Power Automate Plan:
+1. Use **Power Automate** to call the Power BI REST API for your workspace.
+2. Extract the **last refresh status** and **duration**.
+3. Save this data to an **Excel/CSV file** or a SQL table.
+4. Build a Power BI report to monitor and visualize SLA.
+
+---
+
+### **C. Manual Option: Export Data from Service**
+1. Go to the Power BI Service.
+2. Open the **Workspace > Datasets** section.
+3. Check the **Refresh History** for each dataset.
+4. Export the data manually to Excel for further analysis.
+
+---
+
+## **3. Build the SLA Report in Power BI**
+Once you have collected the data:
+1. Import the data (via API results, Excel, or SQL).
+2. Create visuals:
+   - **Table View**: Show **Dataset Name, Last Refresh Time, Refresh Duration, and Status**.
+   - **KPIs**: Track SLAs like average refresh duration, success rate, etc.
+   - **Trend Line**: Visualize refresh times over a period.
+3. Add slicers for filtering by **Workspace Name** or **Date**.
+
+---
+
+## **4. Code Snippet for Power BI REST API (Python Example)**
+
+```python
+import requests
+
+# Authentication
+access_token = 'your_access_token_here'
+group_id = 'your_workspace_id'
+
+# Get Datasets in Workspace
+url = f'https://api.powerbi.com/v1.0/myorg/groups/{group_id}/datasets'
+headers = {
+    'Authorization': f'Bearer {access_token}',
+    'Content-Type': 'application/json'
+}
+response = requests.get(url, headers=headers)
+datasets = response.json()['value']
+
+# Fetch Refresh History
+for dataset in datasets:
+    dataset_id = dataset['id']
+    refresh_url = f'https://api.powerbi.com/v1.0/myorg/groups/{group_id}/datasets/{dataset_id}/refreshes'
+    refresh_response = requests.get(refresh_url, headers=headers)
+    refresh_data = refresh_response.json()['value']
+    print(f"Dataset: {dataset['name']}, Last Refresh: {refresh_data[0]['startTime']}, Duration: {refresh_data[0]['duration']}")
+```
+
+---
+
+## **5. SLA Metrics to Include**
+- Last Refresh Time
+- Refresh Duration
+- Refresh Success/Failure
+- Average Refresh Duration
+- Datasets Missing SLA
+
+---
+
+Let me know if you need help implementing any of these steps or further explanations!
