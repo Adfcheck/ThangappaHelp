@@ -371,3 +371,13 @@ The **Shared Dataset Across Workspaces** method is recommended for merging the r
 This document provides a clear roadmap and comparison for merging two reports. Let me know if you'd like me to fine-tune it further or add specific steps! 🚀
 
 
+
+Average Across Legends = 
+AVERAGEX(
+    SUMMARIZE(
+        'Table',
+        'Table'[LegendField],       -- Replace with your Legend field
+        "LegendValues", [MeasureField] -- Replace with your Y-axis measure
+    ),
+    [LegendValues]
+)
