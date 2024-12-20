@@ -1,14 +1,19 @@
-
 DateSortOrder = 
-VAR YearMonth = 
-    IF(
-        TableName[Date] = "YTD", 
-        9999, -- Large value to ensure "YTD" appears last
-        VALUE(LEFT(TableName[Date], 4)) * 100 + VALUE(RIGHT(TableName[Date], 2))
+VAR MonthText = LEFT(TableName[Date], 3) -- Extract month name (e.g., "Jan")
+VAR YearText = RIGHT(TableName[Date], 2) -- Extract year text (e.g., "24")
+VAR MonthNumber = 
+    SWITCH(
+        MonthText,
+        "Jan", 1, "Feb", 2, "Mar", 3, "Apr", 4, "May", 5, "Jun", 6,
+        "Jul", 7, "Aug", 8, "Sep", 9, "Oct", 10, "Nov", 11, "Dec", 12,
+        0 -- Default if no match
     )
 RETURN
-    YearMonth
-
+    IF(
+        TableName[Date] = "YTD",
+        9999, -- Assign 9999 for "YTD" to appear last
+        2000 + VALUE(YearText) * 100 + MonthNumber
+    )
 
 
 **Subject:** Follow-Up on YTD Column Analysis  
