@@ -1,3 +1,11 @@
+As discussed, the issues highlighted in the Excel file have been addressed and the updated report has now been published to your production workspace. You may proceed with the review at your convenience.
+
+Note:
+As mentioned during our call, the feedback regarding making YTD bold and Total Waived bold has not been implemented at this stage. Implementing this change would require modifications to the data model and thorough testing. Additionally, highlighting Total Waived as bold is not feasible in the current design, as it is part of a category rather than a calculated measure.
+
+Please let us know if you have any further questions or require additional clarifications. We look forward to your feedback on the updated report.
+
+
 DateSortOrder = 
 VAR MonthText = LEFT(TableName[Date], 3) -- Extract month name (e.g., "Jan")
 VAR YearText = RIGHT(TableName[Date], 2) -- Extract year text (e.g., "24")
