@@ -1,3 +1,16 @@
+
+DateSortOrder = 
+VAR YearMonth = 
+    IF(
+        TableName[Date] = "YTD", 
+        9999, -- Large value to ensure "YTD" appears last
+        VALUE(LEFT(TableName[Date], 4)) * 100 + VALUE(RIGHT(TableName[Date], 2))
+    )
+RETURN
+    YearMonth
+
+
+
 **Subject:** Follow-Up on YTD Column Analysis  
 
 Dear [Manager's Name],  
