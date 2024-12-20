@@ -1,4 +1,21 @@
+**Subject:** Follow-Up on YTD Column Analysis  
 
+Dear [Manager's Name],  
+
+I hope this email finds you well.  
+
+After conducting a detailed analysis of the report, specifically focusing on the **YTD column**, I discovered that it is not a true calculated column. Instead, it is derived from the **Column Totals** feature of the matrix visualization. This means it is only labeled as "YTD" and does not actually represent a dynamically calculated Year-to-Date value.  
+
+As a result, this approach could lead to incorrect outputs once the year changes, as it will not adapt to the new year's data.  
+
+To address this issue effectively, I recommend moving forward with the approach we discussed yesterday. This involves creating a **calculated table** with a dedicated **YTD column** that accurately represents Year-to-Date values for each date. This method will ensure precision and adaptability across reporting periods.  
+
+Please let me know your thoughts, and I’m happy to get started on implementing this solution.  
+
+Best regards,  
+[Your Name]  
+
+--------------------
 ReMark Insights
 ReMark Compass
 ReMark Monitor
