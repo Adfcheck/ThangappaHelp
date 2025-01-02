@@ -1,3 +1,74 @@
+
+Pre-Deployment Process
+Change Documentation:
+
+Maintain an Excel index page for tracking all changes (e.g., feature updates, bug fixes, enhancements).
+Use columns such as:
+Feature/Bug ID
+Description
+Priority
+Status
+Responsible Person
+Date of Change
+Update this sheet during every sprint/release cycle.
+ALM Toolkit Diff Comparison:
+
+Use the ALM Toolkit to identify differences between the current and target versions.
+Document changes in the Excel sheet with:
+Affected tables, columns, and measures.
+Impact assessment.
+Dashboard Update:
+
+Save the updated Power BI (.pbix) files to a designated Teams workspace folder with version control.
+Add a version identifier to the filename (e.g., Dashboard_v1.2.pbix).
+Testing and Validation:
+
+Conduct thorough unit testing and peer reviews.
+Validate data accuracy, visuals, and performance.
+Create a test checklist for:
+Data consistency.
+KPI accuracy.
+Visual alignment.
+Deployment Process
+Staging Environment:
+
+Deploy the Power BI dashboard to a staging workspace.
+Verify functionality in the staging environment.
+User Acceptance Testing (UAT):
+
+Share the dashboard with stakeholders for UAT.
+Record feedback and address issues.
+Production Deployment:
+
+Publish the dashboard to the production workspace.
+Verify access permissions for all end users.
+Notify stakeholders about the deployment.
+Post-Deployment Process
+Backup and Documentation:
+
+Archive older versions of the dashboard in a secure location.
+Update the deployment documentation with:
+Deployment date.
+Issues resolved.
+Key changes.
+Monitoring:
+
+Use Power BI’s usage metrics to monitor adoption and identify potential issues.
+Future Sprint (GIT Integration)
+Version Control Setup:
+
+Configure a Git repository for Power BI files.
+Create branches for development, testing, and production.
+Commit and push changes regularly with meaningful comments.
+Automated CI/CD Pipeline:
+
+Integrate deployment scripts for Power BI dashboards into the Git CI/CD pipeline.
+Automate validations and deployments where feasible.
+Would you like any additional details or templates for these steps?
+
+
+
+
 Infrastructure Issue: I am experiencing system slowness issue during meetings or in a call. 
 Issue: The system becomes unresponsive when I attempt to multitask in between meeting (e.g., accessing documents, replying to emails, or using other applications during the call) and the audio frequently breaks, making it difficult to follow conversations or contribute effectively. 
 Impact: Screen sharing, which is essential for demos and collaborative work causing delays and interruptions. 
