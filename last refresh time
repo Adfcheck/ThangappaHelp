@@ -1,3 +1,8 @@
+
+I have reviewed the Power BI report refresh issue, and it appears to be caused by a credentials error. The current access permissions for the data source are insufficient, which is preventing the refresh from completing successfully.
+
+To resolve this issue, the necessary access needs to be provided to Rose. Once she has the required permissions, the refresh process should function correctly.
+
 Here's a professional email template you can use to follow up on your pending approval request:
 
 ---
