@@ -1,3 +1,8 @@
+Python with Pivot (POC Required): Create a Python script to process data, generate pivot tables, and save them in an Excel file with formatting.
+Python with No Pivot (Multiple Sheets): Develop a Python script to dump raw data into multiple sheets in an Excel file without pivoting.
+Only Data Dump: Generate a simple raw data dump into a single Excel file without any additional processing or formatting.
+
+
 Thank you for sharing the Excel file. I have obtained the required details for the supplier reports.
 
 However, for the Metric and Control Reports, I need your assistance in gathering the following information, as it is not currently available in the Excel file:
