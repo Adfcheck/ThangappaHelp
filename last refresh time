@@ -1,3 +1,47 @@
+
+from openpyxl import Workbook, load_workbook
+from openpyxl.pivot import PivotTable, PivotCache
+from openpyxl.pivot.cache import CacheDefinition
+
+# Assuming the existing code writes the data dump to 'Data' sheet
+
+# Open the workbook after the data dump
+buffer.seek(0)
+wb = load_workbook(buffer)
+
+# Access the sheet with raw data
+data_sheet = wb['Data']
+
+# Create a new sheet for the pivot table
+pivot_sheet = wb.create_sheet(title='PivotTable')
+
+# Define the range for the pivot table (adjust based on your data)
+data_range = f"Data!A1:{data_sheet.cell(row=data_sheet.max_row, column=data_sheet.max_column).coordinate}"
+
+# Create a pivot cache
+pivot_cache = PivotCache(cacheDefinition=CacheDefinition(dataRange=data_range))
+pivot_table = PivotTable(cache=pivot_cache, location="A1")
+
+# Add fields to the pivot table
+pivot_table.add_row_field('Column1')  # Replace 'Column1' with actual column names
+pivot_table.add_col_field('Column2')  # Replace 'Column2' with actual column names
+pivot_table.add_data_field('Column3', summarizeFunction='sum')  # Replace 'Column3'
+
+# Add the pivot table to the new sheet
+pivot_sheet.add_pivot(pivot_table)
+
+# Save the workbook back to the buffer
+buffer = BytesIO()
+wb.save(buffer)
+buffer.seek(0)
+
+
+
+
+
+
+
+
 Python with Pivot (POC Required): Create a Python script to process data, generate pivot tables, and save them in an Excel file with formatting.
 Python with No Pivot (Multiple Sheets): Develop a Python script to dump raw data into multiple sheets in an Excel file without pivoting.
 Only Data Dump: Generate a simple raw data dump into a single Excel file without any additional processing or formatting.
