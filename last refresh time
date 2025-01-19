@@ -1,3 +1,8 @@
+Thank you for bringing this to our attention. Since this is a monthly report, the daily refresh does not impact the alert values significantly. I agree that removing this alert makes more sense in this context.
+
+I have made the necessary changes and published the updated report to the workspace. Please let me know if there’s anything else you’d like me to review or modify.
+
+
 import pandas as pd
 from openpyxl import load_workbook
 from openpyxl.worksheet.pivot import PivotTable
