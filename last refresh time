@@ -1,3 +1,14 @@
+with pd.ExcelWriter(buffer, engine="openpyxl") as writer:
+    df.to_excel(writer, index=False, sheet_name="Data")
+    wb = writer.book
+    # Add the second sheet with 4 parallel tables and common headers
+    add_second_sheet_with_headers(wb)
+
+# Save to the buffer or your desired output path
+wb.save(buffer)
+buffer.seek(0)
+
+
 from openpyxl.styles import Alignment, Font
 
 def add_second_sheet_with_headers(wb):
