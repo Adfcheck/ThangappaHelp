@@ -1,4 +1,16 @@
 
+
+I hope this message finds you well.
+
+Could you please check and confirm if there are any replication issues on the AZ side?
+
+As per the details below, we had all the pub schema views replicated on the AZ side, and everything was working as expected until recently. However, we have noticed that only some objects are being replicated instead of all of them.
+
+Since these objects are being used for production, especially after the UAT sign-off, we request you to verify the setup and share your findings at the earliest.
+
+Looking forward to your response.
+------------------------
+
 Here’s an updated version incorporating your current progress with Python:
 
 ---
