@@ -1,4 +1,38 @@
 
+Here’s an updated version incorporating your current progress with Python:
+
+---
+
+**Proof of Concept (POC) for Excel Sheet Creation with Raw and Pivoted Data**  
+
+As part of my POC, I have explored various approaches to create an Excel sheet containing two sheets: one for raw data and the other for pivoted data. Below is a summary of the methods and their progress:  
+
+1. **Using Power BI**  
+   - I created and published a Power BI report.  
+   - However, I faced a limitation where only selected visuals could be exported to Excel instead of the entire page.  
+   - This limitation rendered the approach unsuitable for the POC requirements.  
+
+2. **Using Paginated Reports**  
+   - I successfully created a paginated report that allowed exporting the entire page to Excel.  
+   - Additionally, I configured a Power Automate flow to automate the export process.  
+   - However, due to workspace configuration constraints, a Premium Per User (PPU) or Premium workspace license was required, which was unavailable.  
+
+3. **Using Python** *(Current Approach)*  
+   - I have shifted to Python for generating the Excel sheet.  
+   - Currently, I can successfully create an Excel file with two sheets.  
+     - The first sheet contains raw data.  
+     - The second sheet contains four parallel pivot tables generated directly using Python logic.  
+   - My plan is to implement the pivot logic entirely within the Python script to ensure flexibility and automation.  
+
+This approach is progressing well, and I will continue to refine it to meet the POC requirements.
+
+--- 
+
+Let me know if there are any additional details you’d like to include!
+
+
+
+
 def run_query():
     cur.execute(sql_script)
     records = cur.fetchall()
