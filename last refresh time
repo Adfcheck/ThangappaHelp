@@ -1,3 +1,64 @@
+
+def run_query():
+    cur.execute(sql_script)
+    records = cur.fetchall()
+    column_names = [desc[0] for desc in cur.description]
+    df = pd.DataFrame(records, columns=column_names)
+    
+    buffer = BytesIO()
+    with pd.ExcelWriter(buffer, engine="openpyxl") as writer:
+        df.to_excel(writer, index=False, sheet_name="Data")
+        wb = writer.book
+        
+        # Add the second sheet with 4 parallel tables and common headers
+        add_second_sheet_with_headers(wb)
+        
+        wb.save(buffer)
+    buffer.seek(0)
+    
+    # Apply additional styles or formatting if needed
+    wb = load_workbook(buffer)
+    buffer.seek(0)
+    ws = wb.active
+    first_row_fill = PatternFill(start_color="660066", end_color="741b47", fill_type="solid")
+    white_font = Font(color="FFFFFF", bold=True)
+    
+    for cell in ws[1]:
+        cell.fill = first_row_fill
+        cell.font = white_font
+    
+    for col in ws.columns:
+        max_len = 0
+        column = col[0].column_letter
+        for cell in col:
+            try:
+                if len(str(cell.value)) > max_len:
+                    max_len = len(str(cell.value))
+            except:
+                pass
+        adjusted_width = max_len + 2
+        ws.column_dimensions[column].width = adjusted_width
+    
+    buffer = BytesIO()
+    wb.save(buffer)
+    buffer.seek(0)
+
+    # Your existing code to connect and upload to SharePoint
+    conn = smbclient.connect(server_ip, 445)
+    with BytesIO(buffer.getvalue()) as file_obj:
+        smbclient.store_file(share_name, shared_drive_path_file_obj, file_obj)
+    smbclient.close()
+    
+    # Code to upload file to SharePoint
+    target_folder = ctx.web.get_folder_by_server_relative_url(sharedpoint_url)
+    target_folder.upload_file(excel_filename, content_file_query)
+
+
+
+
+----------
+
+
 with pd.ExcelWriter(buffer, engine="openpyxl") as writer:
     df.to_excel(writer, index=False, sheet_name="Data")
     wb = writer.book
