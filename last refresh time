@@ -1,3 +1,53 @@
+def create_pivot_tables(df_raw1, df_raw2):
+    # First Pivot: Count of 'some_column' grouped by 'date_col' from DataFrame 1
+    pivot1 = (
+        df_raw1.pivot_table(
+            values="some_column",  # Replace with the actual column name
+            index="date_col",      # Replace with the actual column name for the date
+            aggfunc="count"
+        )
+        .reset_index()
+        .values.tolist()
+    )
+    
+    # Second Pivot: Sum of 'some_column' grouped by 'date_col' from DataFrame 1
+    pivot2 = (
+        df_raw1.pivot_table(
+            values="some_column",  # Replace with the actual column name
+            index="date_col",      # Replace with the actual column name for the date
+            aggfunc="sum"
+        )
+        .reset_index()
+        .values.tolist()
+    )
+    
+    # Third Pivot: Count of 'some_column' grouped by 'date_col' from DataFrame 2
+    pivot3 = (
+        df_raw2.pivot_table(
+            values="some_column",  # Replace with the actual column name
+            index="date_col",      # Replace with the actual column name for the date
+            aggfunc="count"
+        )
+        .reset_index()
+        .values.tolist()
+    )
+    
+    # Fourth Pivot: Sum of 'some_column' grouped by 'date_col' from DataFrame 2
+    pivot4 = (
+        df_raw2.pivot_table(
+            values="some_column",  # Replace with the actual column name
+            index="date_col",      # Replace with the actual column name for the date
+            aggfunc="sum"
+        )
+        .reset_index()
+        .values.tolist()
+    )
+
+    return pivot1, pivot2, pivot3, pivot4
+
+-----------
+
+
 from io import BytesIO
 from openpyxl.styles import PatternFill, Font
 from openpyxl import load_workbook
