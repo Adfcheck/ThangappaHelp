@@ -1,3 +1,9 @@
+    ws3 = wb.create_sheet(title="Pivot Data")
+    add_pivot_tables(ws3, pivot1, pivot2, pivot3, pivot4, "Pivot Table 1 & 2", "Pivot Table 3 & 4")
+
+-------
+
+
 def add_pivot_tables(sheet, pivot1, pivot2, pivot3, pivot4, common_header1, common_header2):
     # Write first common header
     sheet.merge_cells(start_row=1, start_column=1, end_row=1, end_column=4)
