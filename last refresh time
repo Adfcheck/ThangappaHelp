@@ -1,3 +1,67 @@
+from io import BytesIO
+from openpyxl.styles import PatternFill, Font
+from openpyxl import load_workbook
+import pandas as pd
+
+# Assume cur is your database cursor and df_raw1, df_raw2 are already created
+buffer = BytesIO()
+
+# Helper function to apply formatting
+def apply_formatting(ws):
+    # Apply red fill and white font to the first row
+    first_row_fill = PatternFill(start_color="600066", end_color="741b47", fill_type="solid")
+    white_font = Font(color="FFFFFF", bold=True)
+
+    for cell in ws[1]:  # First row cells
+        cell.fill = first_row_fill
+        cell.font = white_font
+
+    # Adjust column width
+    for col in ws.columns:
+        max_len = 0
+        column = col[0].column_letter  # Get the column letter
+        for cell in col:
+            try:
+                max_len = max(max_len, len(str(cell.value)))
+            except:
+                pass
+        adjusted_width = max_len + 2
+        ws.column_dimensions[column].width = adjusted_width
+
+# Writing to Excel buffer
+with pd.ExcelWriter(buffer, engine="openpyxl") as writer:
+    # Write DataFrame 1 to "Raw Data 1" sheet
+    df_raw1.to_excel(writer, index=False, sheet_name="Raw Data 1")
+    # Write DataFrame 2 to "Raw Data 2" sheet
+    df_raw2.to_excel(writer, index=False, sheet_name="Raw Data 2")
+
+    # Load workbook and apply formatting
+    wb = writer.book
+    ws1 = wb["Raw Data 1"]
+    ws2 = wb["Raw Data 2"]
+
+    apply_formatting(ws1)
+    apply_formatting(ws2)
+
+# Save buffer
+buffer.seek(0)
+
+# Save to file (optional)
+with open("output.xlsx", "wb") as f:
+    f.write(buffer.getvalue())
+
+# If needed, upload to SharePoint or other platforms using buffer
+
+
+
+
+
+
+
+
+
+
+
 # First SQL Query for Data Source 1
 sql_query1 = "SELECT * FROM your_table1"
 cur.execute(sql_query1)
