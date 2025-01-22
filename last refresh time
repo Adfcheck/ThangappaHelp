@@ -1,3 +1,25 @@
+# First SQL Query for Data Source 1
+sql_query1 = "SELECT * FROM your_table1"
+cur.execute(sql_query1)
+records1 = cur.fetchall()
+columns1 = [desc[0] for desc in cur.description]  # Get column names
+df_raw1 = pd.DataFrame(records1, columns=columns1)  # Convert to DataFrame
+
+# Second SQL Query for Data Source 2
+sql_query2 = "SELECT * FROM your_table2"
+cur.execute(sql_query2)
+records2 = cur.fetchall()
+columns2 = [desc[0] for desc in cur.description]  # Get column names
+df_raw2 = pd.DataFrame(records2, columns=columns2)  # Convert to DataFrame
+
+
+
+
+
+
+
+
+-------
 import pandas as pd
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Font
