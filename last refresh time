@@ -1,3 +1,6 @@
+ALTER TABLE your_table_name
+ADD CONSTRAINT constraint_name UNIQUE 
+
 def create_and_print_pivot_tables_with_headers(df_raw1, df_raw2):
     # Ensure 'date_col' is in datetime format
     df_raw1["date_col"] = pd.to_datetime(df_raw1["date_col"])
