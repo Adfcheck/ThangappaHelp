@@ -1,4 +1,69 @@
-    ws3 = wb.create_sheet(title="Pivot Data")
+def create_and_print_pivot_tables_with_headers(df_raw1, df_raw2):
+    # Ensure 'date_col' is in datetime format
+    df_raw1["date_col"] = pd.to_datetime(df_raw1["date_col"])
+    df_raw2["date_col"] = pd.to_datetime(df_raw2["date_col"])
+
+    # First Pivot: Count of 'some_column' grouped by 'date_col' (date only) from DataFrame 1
+    pivot1 = (
+        df_raw1.pivot_table(
+            values="some_column",  # Replace with the actual column name
+            index=df_raw1["date_col"].dt.date,
+            aggfunc="count"
+        )
+        .reset_index()
+    )
+    pivot1.columns = ["Date", "Count of some_column"]  # Add meaningful headers
+    print("Pivot Table 1 (Count of some_column from DataFrame 1):")
+    print(pivot1)
+    print("\n")
+
+    # Second Pivot: Sum of 'some_column' grouped by 'date_col' (date only) from DataFrame 1
+    pivot2 = (
+        df_raw1.pivot_table(
+            values="some_column",  # Replace with the actual column name
+            index=df_raw1["date_col"].dt.date,
+            aggfunc="sum"
+        )
+        .reset_index()
+    )
+    pivot2.columns = ["Date", "Sum of some_column"]  # Add meaningful headers
+    print("Pivot Table 2 (Sum of some_column from DataFrame 1):")
+    print(pivot2)
+    print("\n")
+
+    # Third Pivot: Count of 'some_column' grouped by 'date_col' (date only) from DataFrame 2
+    pivot3 = (
+        df_raw2.pivot_table(
+            values="some_column",  # Replace with the actual column name
+            index=df_raw2["date_col"].dt.date,
+            aggfunc="count"
+        )
+        .reset_index()
+    )
+    pivot3.columns = ["Date", "Count of some_column"]  # Add meaningful headers
+    print("Pivot Table 3 (Count of some_column from DataFrame 2):")
+    print(pivot3)
+    print("\n")
+
+    # Fourth Pivot: Sum of 'some_column' grouped by 'date_col' (date only) from DataFrame 2
+    pivot4 = (
+        df_raw2.pivot_table(
+            values="some_column",  # Replace with the actual column name
+            index=df_raw2["date_col"].dt.date,
+            aggfunc="sum"
+        )
+        .reset_index()
+    )
+    pivot4.columns = ["Date", "Sum of some_column"]  # Add meaningful headers
+    print("Pivot Table 4 (Sum of some_column from DataFrame 2):")
+    print(pivot4)
+    print("\n")
+
+    return pivot1, pivot2, pivot3, pivot4
+---------------
+
+
+ws3 = wb.create_sheet(title="Pivot Data")
     add_pivot_tables(ws3, pivot1, pivot2, pivot3, pivot4, "Pivot Table 1 & 2", "Pivot Table 3 & 4")
 
 -------
