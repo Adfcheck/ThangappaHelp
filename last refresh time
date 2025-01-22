@@ -1,3 +1,54 @@
+def add_pivot_tables(sheet, pivot1, pivot2, pivot3, pivot4, common_header1, common_header2):
+    # Write first common header
+    sheet.merge_cells(start_row=1, start_column=1, end_row=1, end_column=4)
+    cell = sheet.cell(row=1, column=1)
+    cell.value = common_header1
+    cell.alignment = Alignment(horizontal="center", vertical="center")
+    cell.font = Font(bold=True)
+
+    # Write Pivot Table 1
+    start_row = 2
+    start_col = 1
+    for row_idx, row_data in enumerate(pivot1, start=start_row):
+        for col_idx, value in enumerate(row_data, start=start_col):
+            cell = sheet.cell(row=row_idx, column=col_idx)
+            cell.value = value
+            cell.alignment = Alignment(horizontal="center")
+
+    # Write Pivot Table 2 (next to Pivot Table 1)
+    start_col = 3
+    for row_idx, row_data in enumerate(pivot2, start=start_row):
+        for col_idx, value in enumerate(row_data, start=start_col):
+            cell = sheet.cell(row=row_idx, column=col_idx)
+            cell.value = value
+            cell.alignment = Alignment(horizontal="center")
+
+    # Write second common header
+    sheet.merge_cells(start_row=6, start_column=1, end_row=6, end_column=4)
+    cell = sheet.cell(row=6, column=1)
+    cell.value = common_header2
+    cell.alignment = Alignment(horizontal="center", vertical="center")
+    cell.font = Font(bold=True)
+
+    # Write Pivot Table 3
+    start_row = 7
+    start_col = 1
+    for row_idx, row_data in enumerate(pivot3, start=start_row):
+        for col_idx, value in enumerate(row_data, start=start_col):
+            cell = sheet.cell(row=row_idx, column=col_idx)
+            cell.value = value
+            cell.alignment = Alignment(horizontal="center")
+
+    # Write Pivot Table 4 (next to Pivot Table 3)
+    start_col = 3
+    for row_idx, row_data in enumerate(pivot4, start=start_row):
+        for col_idx, value in enumerate(row_data, start=start_col):
+            cell = sheet.cell(row=row_idx, column=col_idx)
+            cell.value = value
+            cell.alignment = Alignment(horizontal="center")
+
+---------------------------
+
 def create_pivot_tables(df_raw1, df_raw2):
     # First Pivot: Count of 'some_column' grouped by 'date_col' from DataFrame 1
     pivot1 = (
