@@ -1,3 +1,10 @@
+
+SELECT sequence_name, schema_name, sequence_owner
+FROM information_schema.sequences
+ALTER SEQUENCE your_sequence_name RESTART WITH 93;
+
+
+----
 ALTER TABLE your_table_name
 ADD CONSTRAINT constraint_name UNIQUE 
 
