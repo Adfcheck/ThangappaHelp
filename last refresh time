@@ -1,4 +1,21 @@
+   # Ensure 'date_col' is in datetime format
+    df_raw1["date_col"] = pd.to_datetime(df_raw1["date_col"])
+    df_raw2["date_col"] = pd.to_datetime(df_raw2["date_col"])
 
+    # First Pivot: Count of 'some_column' grouped by 'date_col' (date only) from DataFrame 1
+    pivot1 = (
+        df_raw1.pivot_table(
+            values="some_column",  # Replace with the actual column name
+            index=df_raw1["date_col"].dt.date,
+            aggfunc="count"
+        )
+        .reset_index()
+    )
+    pivot1.columns = ["Date", "Count of some_column"]  # Add meaningful headers
+    print("Pivot Table 1 (Count of some_column from DataFrame 1):")
+    print(pivot1)
+    print("\n")
+------
 SELECT sequence_name, schema_name, sequence_owner
 FROM information_schema.sequences
 ALTER SEQUENCE your_sequence_name RESTART WITH 93;
