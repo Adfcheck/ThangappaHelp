@@ -1,4 +1,24 @@
-   # Ensure 'date_col' is in datetime format
+Hi [Recipient's Name],
+
+Good morning.
+
+Thank you for looking into this. However, it seems that the view counts were checked using our team’s role. Could you please confirm if the replication setup has also been verified with the business team’s role? We still observe a mismatch in the view counts between the two roles.
+
+Additionally, here are the specific views that we suspect may not be replicated correctly:
+
+[View Name 1]
+[View Name 2]
+[View Name 3]
+[View Name 4]
+Could you kindly check these specific objects and confirm if they are replicated as expected?
+
+Looking forward to your findings. Let me know if any additional details are required from my end.
+
+Best regards,
+
+----
+
+# Ensure 'date_col' is in datetime format
     df_raw1["date_col"] = pd.to_datetime(df_raw1["date_col"])
     df_raw2["date_col"] = pd.to_datetime(df_raw2["date_col"])
 
