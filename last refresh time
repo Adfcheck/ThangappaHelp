@@ -1,3 +1,17 @@
+I have created the report in Power BI, and below is the UAT workspace link for your review.
+
+I have a few questions and observations while working on the report:
+
+What would be the best suitable time to refresh the Power BI report?
+Could you please explain the difference between location and disposal channel, as both seem to have somewhat similar values?
+Could you clarify why some blanks appear in auction and disposal, while banks seem fine?
+Currently, we have used the MM/DD/YYYY date format—please confirm if this is acceptable.
+In the Remarketing Summary Report, we have a Definition tab explaining key metrics. If a similar tab is required for this report, kindly provide the necessary definitions.
+Note: This report is developed in Power BI and will be available in the Power BI workspace, not on the shared drive or SharePoint.
+
+Please review and let me know if you have any questions.
+
+
 I have completed the requested changes and published them to the workspace. Please validate the updates and proceed with updating the app so the changes reflect accordingly.
 
 **Subject:** Oracle Access Request Approved – Assistance Needed with IODS Tables/Views  
