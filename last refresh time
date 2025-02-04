@@ -1,3 +1,70 @@
+
+import time
+import pandas as pd
+import snowflake.connector
+
+def wait_for_refresh(group_id, dataset_id, access_token, polling_interval=10):
+    """
+    Waits for the Power BI dataset to refresh completely.
+    Logs the start time and end time into Snowflake.
+    """
+    while True:
+        refresh_status_df = get_pbi_refresh(group_id, dataset_id, access_token)
+        
+        latest_refresh = refresh_status_df.iloc[0]  # Get the most recent refresh record
+        status = latest_refresh["STATUS"]
+        
+        print(f"Refresh Status: {status}")
+        
+        if status in ["Completed", "Failed"]:
+            # Extract Start Time and End Time
+            start_time = latest_refresh["STARTTIME"]
+            end_time = latest_refresh["ENDTIME"]
+            
+            # Log into Snowflake
+            log_refresh_to_snowflake(group_id, dataset_id, start_time, end_time, status)
+            break
+        
+        # Wait before polling again
+        time.sleep(polling_interval)
+
+def log_refresh_to_snowflake(group_id, dataset_id, start_time, end_time, status):
+    """
+    Logs refresh details into Snowflake table.
+    """
+    conn = snowflake.connector.connect(
+        user="YOUR_USER",
+        password="YOUR_PASSWORD",
+        account="YOUR_ACCOUNT",
+        warehouse="YOUR_WAREHOUSE",
+        database="YOUR_DATABASE",
+        schema="YOUR_SCHEMA"
+    )
+    
+    cursor = conn.cursor()
+    
+    insert_query = f"""
+    INSERT INTO NUCLEUS_TABLE (GROUP_ID, DATASET_ID, START_TIME, END_TIME, STATUS)
+    VALUES ('{group_id}', '{dataset_id}', '{start_time}', '{end_time}', '{status}')
+    """
+    
+    cursor.execute(insert_query)
+    conn.commit()
+    
+    print("Refresh log successfully added to Snowflake Nucleus table.")
+    
+    cursor.close()
+    conn.close()
+
+# Example Usage:
+wait_for_refresh(groupID1, datasetID1, acces_t)
+
+----------------
+
+
+
+
+
 I have created the report in Power BI, and below is the UAT workspace link for your review.
 
 I have a few questions and observations while working on the report:
