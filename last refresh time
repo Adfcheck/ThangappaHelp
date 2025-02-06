@@ -1,4 +1,26 @@
 
+import asyncio
+import aiohttp
+
+DBT_API_URL = "https://cloud.getdbt.com/api/v2/accounts/{account_id}/jobs/{job_id}/run/"
+HEADERS = {"Authorization": "Token {your_dbt_api_token}"}
+
+async def run_dbt_job(session, job_id):
+    url = DBT_API_URL.format(account_id="your_account_id", job_id=job_id)
+    async with session.post(url, headers=HEADERS) as response:
+        return await response.json()
+
+async def main():
+    job_ids = ["12345", "67890"]  # Replace with your job IDs
+    async with aiohttp.ClientSession() as session:
+        tasks = [run_dbt_job(session, job_id) for job_id in job_ids]
+        results = await asyncio.gather(*tasks)
+        print(results)  # Check the response
+
+asyncio.run(main())
+
+
+----------
 import time
 import pandas as pd
 import snowflake.connector
