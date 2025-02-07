@@ -1,3 +1,12 @@
+touch /home/PZGN90/shared_config/__init__.py
+import sys
+sys.path.append("/home/PZGN90/shared_config")
+
+import shared_config.config  # ✅ Try importing again
+pip install --user /home/PZGN90/shared_config
+
+
+
 [build-system]
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
