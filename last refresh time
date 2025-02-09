@@ -1,3 +1,64 @@
+You're following the process of creating a Python package and making it available for import. Based on your steps, you're trying to:
+
+1. **Develop a package (`shared_config`)** in a directory (`/home/PZGN90/shared_config`).
+2. **Test importing the package** in a Jupyter Notebook or Python script.
+3. **Eventually deploy this package to Posit Connect** for use in a production environment.
+
+### Current Issue:
+Your package contains files like `config.py`, `setup.py`, and `__init__.py`, which indicates it's structured correctly. However, you're getting a `ModuleNotFoundError` even after adding the package path to `sys.path`.
+
+### Recommended Approach (Option 2: Install Locally as a Package)
+Since you're planning for future deployment, you should **install the package properly** instead of just modifying `sys.path`.
+
+#### Steps to Follow:
+
+1. **Ensure your package structure is correct**  
+   Your `shared_config` directory should look like this:
+   ```
+   shared_config/
+   ├── shared_config/
+   │   ├── __init__.py
+   │   ├── config.py
+   ├── setup.py
+   ├── pyproject.toml
+   ```
+   The `__init__.py` file should include:
+   ```python
+   from .config import *
+   ```
+
+2. **Install the package locally** in Workbench using:
+   ```bash
+   pip install --editable /home/PZGN90/shared_config
+   ```
+   or inside a notebook:
+   ```python
+   !pip install --editable /home/PZGN90/shared_config
+   ```
+
+3. **Test the import**  
+   ```python
+   from shared_config import config
+   ```
+
+4. **Deploy to Posit Connect (Future Step)**  
+   - Package your project:  
+     ```bash
+     python setup.py sdist
+     ```
+   - Upload it to an internal package repository or Posit Connect.
+
+Would you like guidance on `setup.py` or `pyproject.toml` for packaging?
+----------------------------------------------
+
+
+
+
+
+
+
+
+
 touch /home/PZGN90/shared_config/__init__.py
 import sys
 sys.path.append("/home/PZGN90/shared_config")
