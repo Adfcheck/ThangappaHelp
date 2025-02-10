@@ -1,3 +1,14 @@
+We have fixed the dates in the report and attached the updated version for your review.
+
+Regarding the volume, we have run the latest data as of today and compared it with Oracle. Below is the count comparison:
+
+Source	Count
+Oracle Data	[Count]
+Report Data	[Count]
+Please review the attached report and let us know if you have any further questions.
+------------
+
+
 import concurrent.futures
 import time
 
