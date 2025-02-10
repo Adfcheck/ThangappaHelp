@@ -1,3 +1,30 @@
+import concurrent.futures
+import time
+
+def task1():
+    print("Starting Task 1")
+    time.sleep(3)  # Simulating a delay
+    print("Task 1 completed")
+
+def task2():
+    print("Starting Task 2")
+    time.sleep(2)  # Simulating a delay
+    print("Task 2 completed")
+
+# Running tasks in parallel
+with concurrent.futures.ThreadPoolExecutor() as executor:
+    future1 = executor.submit(task1)
+    future2 = executor.submit(task2)
+
+    # Wait for both functions to complete
+    concurrent.futures.wait([future1, future2])
+
+print("Both tasks are done!")
+
+-----------
+
+
+
 You're following the process of creating a Python package and making it available for import. Based on your steps, you're trying to:
 
 1. **Develop a package (`shared_config`)** in a directory (`/home/PZGN90/shared_config`).
