@@ -1,3 +1,11 @@
+Currently, there is a risk of deploying Python reports on Posit Connect if there are unintended changes to secrets. To enhance security and maintain consistency, we need to:
+
+Prevent deployment of the scheduled reports if there are any changes in secrets.
+Centralize secret management so that updates made in one place are automatically reflected across all reports, avoiding redundant secret configurations in multiple scripts.
+By implementing this, we can ensure better security, reduce manual interventions, and streamline report deployments.
+
+------------------
+
 import pkg_resources
 installed_packages = {pkg.key: pkg.version for pkg in pkg_resources.working_set}
 print(installed_packages)
