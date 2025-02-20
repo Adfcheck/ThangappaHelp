@@ -1,3 +1,55 @@
+
+import requests
+
+# Replace these with your actual values
+POSIT_CONNECT_URL = "https://your-posit-connect-server"
+API_KEY = "your-api-key"
+DEPLOYED_CONTENT_NAME = "your-python-script-name"  # Change this to the actual name
+NEW_ENV_VARIABLES = {
+    "MY_ENV_VAR": "my_secret_value",
+    "ANOTHER_VAR": "another_value"
+}
+
+# Headers for authentication
+HEADERS = {
+    "Authorization": f"Key {API_KEY}",
+    "Content-Type": "application/json"
+}
+
+def get_content_id():
+    """Fetches the content ID for the deployed Python script."""
+    url = f"{POSIT_CONNECT_URL}/__api__/v1/content"
+    response = requests.get(url, headers=HEADERS)
+
+    if response.status_code == 200:
+        content_list = response.json()["results"]
+        for content in content_list:
+            if content["name"] == DEPLOYED_CONTENT_NAME:
+                return content["id"]
+    else:
+        print(f"Failed to fetch content: {response.text}")
+        return None
+
+def set_environment_variables(content_id):
+    """Sets environment variables for the given content ID."""
+    url = f"{POSIT_CONNECT_URL}/__api__/v1/content/{content_id}/environment"
+    payload = {"vars": [{"name": k, "value": v} for k, v in NEW_ENV_VARIABLES.items()]}
+
+    response = requests.post(url, json=payload, headers=HEADERS)
+    
+    if response.status_code == 200:
+        print("✅ Environment variables set successfully!")
+    else:
+        print(f"❌ Failed to set environment variables: {response.text}")
+
+if __name__ == "__main__":
+    content_id = get_content_id()
+    if content_id:
+        set_environment_variables(content_id)
+    else:
+        print("❌ Could not find the deployed content.")
+
+----------
 Currently, there is a risk of deploying Python reports on Posit Connect if there are unintended changes to secrets. To enhance security and maintain consistency, we need to:
 
 Prevent deployment of the scheduled reports if there are any changes in secrets.
