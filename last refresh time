@@ -1,4 +1,35 @@
+import requests
 
+# Posit Connect API details
+POSIT_CONNECT_URL = "https://your-posit-connect-server"
+API_KEY = "your-api-key"
+DEPLOYED_CONTENT_ID = "your-content-id"  # Get this from Posit Connect
+
+# New environment variable
+new_env_vars = {
+    "vars": [
+        {"name": "MY_NEW_VAR", "value": "my_secret_value"},
+        {"name": "ANOTHER_NEW_VAR", "value": "another_value"}
+    ]
+}
+
+# Headers for authentication
+headers = {
+    "Authorization": f"Key {API_KEY}",
+    "Content-Type": "application/json"
+}
+
+# API Endpoint for creating new environment variables
+url = f"{POSIT_CONNECT_URL}/__api__/v1/content/{DEPLOYED_CONTENT_ID}/environment"
+
+# POST request to create a new environment variable
+response = requests.post(url, headers=headers, json=new_env_vars, verify=False)  # Disable SSL verification if needed
+
+# Print response
+print(f"Status Code: {response.status_code}")
+print(f"Response: {response.text}")
+
+---------
 import requests
 
 # Replace these with your actual values
