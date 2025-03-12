@@ -1,3 +1,6 @@
+elif dtype == str:
+    df[col] = df[col].astype(str).replace('nan', np.nan).apply(lambda x: x if isinstance(x, str) else f"{x:0>{len(str(x))}}" if pd.notna(x) else x)
+
 The issue is observed in the December 2024 file, where certain date columns contain integer values, including negative values. I have attached a screenshot for reference. This might be due to incorrect data entry, transformation issues, or an incorrect format applied during data extraction.
 
 Let me know if you need any further details.
