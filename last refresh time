@@ -1,5 +1,75 @@
 import pandas as pd
 import numpy as np
+import os
+
+# Define column names and expected data types
+column_dtypes = {
+    'AGREEMENT_NBR': str,
+    'PRODUCT': str,
+    'VIN': str,
+    'ASSET_DESCRIPTION': str,
+    'DEFAULT_ALERT': str,
+    'ALERT_DATE': 'datetime64',
+    'REPO_DATE': 'datetime64',
+    'SOLD_DATE': 'datetime64',
+    'REPO_TO_SOLD_TAT': 'int64',
+    'LOCATION_TYPE': str,
+    'AUCTION_NAME': str,
+    'AUCTION_ADDRESS': str,
+    'DATE_AT_LOCATION': 'datetime64',
+    'AUCTION_TO_SOLD_TAT': 'int64',
+    'DISPOSAL_CHANNEL': str,
+    'READY_FOR_SALE_EVENT_DATE': 'datetime64',
+    'TITLE_AT_AUCTION_TO_SOLD_TAT': 'int64'
+}
+
+# Read Excel file
+df = pd.read_excel(file_obj, sheet_name='Data')
+
+# Get the source file name and add it as a new column
+source_file_name = os.path.basename(file_obj.name)
+df['SOURCE_FILE_NAME'] = source_file_name
+
+# Standardize column names (uppercase, replace spaces/hyphens with underscores)
+df.columns = df.columns.str.strip().str.upper().str.replace(' ', '_').str.replace('-', '_')
+
+# Convert columns to expected data types, replacing errors with NaN
+for col, dtype in column_dtypes.items():
+    if col in df.columns:
+        if dtype == 'datetime64':
+            df[col] = pd.to_datetime(df[col], errors='coerce')  # Convert to datetime, replace errors with NaT
+        elif dtype == 'int64':
+            df[col] = pd.to_numeric(df[col], errors='coerce')  # Convert to integer, replace errors with NaN
+        elif dtype == str:
+            df[col] = df[col].astype(str).replace('nan', np.nan)  # Convert to string, replace 'nan' with NaN
+
+# Print the processed DataFrame
+print(df.head())
+-----------
+CREATE OR REPLACE TABLE YOUR_DATABASE.YOUR_SCHEMA.AUCTION_DATA (
+    AGREEMENT_NBR STRING,
+    PRODUCT STRING,
+    VIN STRING,
+    ASSET_DESCRIPTION STRING,
+    DEFAULT_ALERT STRING,
+    ALERT_DATE DATE,
+    REPO_DATE DATE,
+    SOLD_DATE DATE,
+    REPO_TO_SOLD_TAT INTEGER,
+    LOCATION_TYPE STRING,
+    AUCTION_NAME STRING,
+    AUCTION_ADDRESS STRING,
+    DATE_AT_LOCATION DATE,
+    AUCTION_TO_SOLD_TAT INTEGER,
+    DISPOSAL_CHANNEL STRING,
+    READY_FOR_SALE_EVENT_DATE DATE,
+    TITLE_AT_AUCTION_TO_SOLD_TAT INTEGER,
+    SOURCE_FILE_NAME STRING
+);
+------------
+
+import pandas as pd
+import numpy as np
 
 # Define column names and expected data types
 column_dtypes = {
