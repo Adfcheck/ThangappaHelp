@@ -1,3 +1,13 @@
+Hi [Sender's Name],
+
+I have identified that until September 2023, we had 17 columns, and before that, there were 3 fewer columns.
+
+As per your suggestion, we will proceed with adding data up to September 2023. Let me know if you need any further adjustments.
+
+Best,
+[Your Name]
+------
+
 import pandas as pd
 import numpy as np
 import os
