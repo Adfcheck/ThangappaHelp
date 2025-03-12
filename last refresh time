@@ -1,3 +1,7 @@
+The issue is observed in the December 2024 file, where certain date columns contain integer values, including negative values. I have attached a screenshot for reference. This might be due to incorrect data entry, transformation issues, or an incorrect format applied during data extraction.
+
+Let me know if you need any further details.
+
 Hi [Sender's Name],
  Additionally, for data that is not in the correct format (e.g., the date column containing integer values or negative values), I am currently handling them by setting those entries as NULL.
 
