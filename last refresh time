@@ -1,4 +1,5 @@
 Hi [Sender's Name],
+ Additionally, for data that is not in the correct format (e.g., the date column containing integer values or negative values), I am currently handling them by setting those entries as NULL.
 
 I have identified that until September 2023, we had 17 columns, and before that, there were 3 fewer columns.
 
