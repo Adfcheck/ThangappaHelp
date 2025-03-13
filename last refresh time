@@ -1,3 +1,12 @@
+We are in the process of consolidating all the Month-End Excel Reports into a historical table as per the request. However, we noticed that the following files are missing from the shared folder:
+
+January 2025 (December 2024 data)
+February 2025 (January 2025 data)
+Could you please confirm if these files need to be added to the historical table? If so, kindly provide them at your earliest convenience.
+
+Looking forward to your response.
+
+
 elif dtype == str:
     df[col] = df[col].astype(str).replace('nan', np.nan).apply(lambda x: x if isinstance(x, str) else f"{x:0>{len(str(x))}}" if pd.notna(x) else x)
 
