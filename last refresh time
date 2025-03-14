@@ -1,3 +1,41 @@
+import time
+import requests
+
+#### DEFINE Refresh
+def refresh_pbi(group, dataset, token, base_url=None):
+    if base_url is None:
+        base_url = 'https://api.powerbi.com/v1.0/myorg/'
+
+    r = requests.post(
+        f'{base_url}groups/{group}/datasets/{dataset}/refreshes',
+        headers={'Authorization': f'Bearer {token}'}
+    )
+    return r.status_code
+
+# Define polling parameters
+max_attempts = 3  # Maximum retries
+attempt = 0
+polling_frequency = 900  # 15 minutes (900 seconds)
+
+while attempt < max_attempts:
+    status = refresh_pbi(groupID1, datasetID1, acces_t)  # Call refresh function
+    print(f"Attempt {attempt + 1}: Status Code = {status}")
+
+    if status == 200:  # Success response code
+        print("Success: Dataset refresh triggered.")
+        break  # Exit loop on success
+    else:
+        attempt += 1
+        if attempt < max_attempts:
+            print(f"Retrying in {polling_frequency // 60} minutes...")
+            time.sleep(polling_frequency)  # Wait before retrying
+
+if attempt == max_attempts:
+    print("Failed to refresh dataset after 3 attempts.")
+
+---------------------------------------------------------------------------------------------
+
+
 We are in the process of consolidating all the Month-End Excel Reports into a historical table as per the request. However, we noticed that the following files are missing from the shared folder:
 
 January 2025 (December 2024 data)
