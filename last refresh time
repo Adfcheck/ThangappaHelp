@@ -1,3 +1,66 @@
+def wait_for_refresh(group_id, dataset_id, access_token, polling_interval=10):
+    """
+    Waits for the Power BI dataset to refresh completely.
+    Logs the start time and end time into Snowflake.
+    """
+    while True:
+        refresh_status_df = get_pbi_refresh(group_id, dataset_id, access_token)
+        latest_refresh = refresh_status_df.iloc[0]  # Get the most recent refresh record
+        status = latest_refresh["STATUS"]
+
+        print(f"Refresh Status: {status}")
+
+        if status in ["Completed", "Failed"]:
+            # Extract Start Time and End Time
+            start_time = latest_refresh["STARTTIME"]
+            end_time = latest_refresh["ENDTIME"]
+
+            print(start_time)
+            print(end_time)
+            # Log into Snowflake
+            log_refresh_to_snowflake(group_id, dataset_id, start_time, end_time, status)
+
+            return status  # Return status instead of breaking the loop
+
+        # Wait before polling again
+        time.sleep(polling_interval)
+
+
+
+polling_frequency = 30
+max_attempts = 3  # Maximum retries
+
+while True:
+    time.sleep(polling_frequency)
+    status = get_job_run_status(job_run_id)
+    print(f"Status = {DbtJobRunStatus(status).name}")
+
+    if status == DbtJobRunStatus.SUCCESS:
+        # Try refreshing the PBI dataset up to max_attempts times
+        attempt = 0
+        while attempt < max_attempts:
+            refresh_status = wait_for_refresh(groupID1, datasetID1, acces_t)  # Get refresh status
+            print(f"Attempt {attempt + 1}: Refresh Status = {refresh_status}")
+
+            if refresh_status == "Completed":
+                print("Success: Dataset refresh completed.")
+                break
+            elif refresh_status == "Failed":
+                attempt += 1
+                if attempt < max_attempts:
+                    print(f"Retrying in {polling_frequency // 60} minutes...")
+                    time.sleep(polling_frequency)  # Wait before retrying
+                else:
+                    print("Failed to refresh dataset after 3 attempts.")
+        
+        break  # Exit loop after success or max attempts
+
+    if status == DbtJobRunStatus.ERROR:
+        break
+
+
+
+
 import time
 import requests
 
