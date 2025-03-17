@@ -1,3 +1,15 @@
+
+Dear Raj,
+
+We have inserted the available historical data from the shared folder into the UAT environment for testing. Kindly review and let us know your feedback.
+
+Additionally, if possible, please provide the missing files (January 2025 and February 2025) so that we can incorporate them into the production environment as well.
+
+Looking forward to your response.
+
+Best Regards,
+[Your Name]
+
 def wait_for_refresh(group_id, dataset_id, access_token, polling_interval=10):
     """
     Waits for the Power BI dataset to refresh completely.
