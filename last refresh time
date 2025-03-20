@@ -1,3 +1,86 @@
+refresh_status_df = get_pbi_refresh(group_id, dataset_id, access_token)
+latest_refresh = refresh_status_df.iloc[0]  # Get the most recent refresh record
+status = latest_refresh["STATUS"]
+
+# Capture error message if the status is 'Failed'
+error_message = latest_refresh.get("MESSAGE", "No error message available") if status == "Failed" else None
+
+print(f"Refresh Status: {status}")
+
+if error_message:
+    print(f"Error Message: {error_message}")
+
+# Example logging to Snowflake
+log_refresh_to_snowflake(group_id, dataset_id, latest_refresh.get("STARTTIME"), latest_refresh.get("ENDTIME"), status, error_message)
+----------------------------------------------------------
+
+CREATE OR REPLACE TABLE PBI_CONFIG (
+    REPORT_ID VARCHAR(50),
+    CONFIG_NAME VARCHAR(100),
+    CONFIG_VALUE VARCHAR(255),
+    DESCRIPTION VARCHAR(500),
+    LAST_UPDATED TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (REPORT_ID, CONFIG_NAME)
+);
+
+
+INSERT INTO PBI_CONFIG (REPORT_ID, CONFIG_NAME, CONFIG_VALUE, DESCRIPTION)
+VALUES
+    ('Report_123', 'GROUP_ID', '12345', 'Power BI Group ID'),
+    ('Report_123', 'DATASET_ID', '67890', 'Power BI Dataset ID'),
+    ('Report_123', 'ATTEMPTS', '3', 'Number of retry attempts'),
+    ('Report_123', 'POLLING_FREQUENCY', '30', 'Polling interval in seconds'),
+    ('Report_123', 'LOG_TABLE', 'PBI_LOGS', 'Snowflake table to store refresh logs'),
+    ('Report_456', 'GROUP_ID', '22345', 'Power BI Group ID for another report'),
+    ('Report_456', 'DATASET_ID', '77890', 'Dataset ID for another report');
+
+----
+import snowflake.connector
+
+def get_config_values(report_id):
+    """
+    Fetch configuration values from Snowflake using report-specific config.
+    """
+    conn = snowflake.connector.connect(
+        user='your_user',
+        password='your_password',
+        account='your_account',
+        warehouse='your_warehouse',
+        database='your_database',
+        schema='your_schema'
+    )
+    cursor = conn.cursor()
+    
+    query = """
+    SELECT CONFIG_NAME, CONFIG_VALUE 
+    FROM PBI_CONFIG 
+    WHERE REPORT_ID = %s
+
+SELECT * FROM PBI_CONFIG 
+WHERE REPORT_ID = 'Report_123' 
+ORDER BY LAST_UPDATED DESC;
+    """
+    cursor.execute(query, (report_id,))
+    results = dict(cursor.fetchall())
+    cursor.close()
+    conn.close()
+    
+    return results
+
+# Example usage
+report_id = 'Report_123'
+config = get_config_values(report_id)
+
+group_id = config.get('GROUP_ID')
+dataset_id = config.get('DATASET_ID')
+max_attempts = int(config.get('ATTEMPTS', 3))
+polling_frequency = int(config.get('POLLING_FREQUENCY', 30))
+log_table = config.get('LOG_TABLE')
+
+print(f"Group ID: {group_id}, Dataset ID: {dataset_id}, Attempts: {max_attempts}, Polling Frequency: {polling_frequency}, Log Table: {log_table}")
+---------
+
+
 I reviewed the refresh status, and the last refresh was successful, so it seems there’s no immediate need for debugging. However, I understand that the underlying view is the Sold Me view. I’ll verify the timing based on the evening job to ensure everything aligns correctly.
 
 We can further discuss this tomorrow and go over any additional thoughts or findings.
