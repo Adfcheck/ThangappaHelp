@@ -1,3 +1,21 @@
+
+refresh_status_df = get_pbi_refresh(group_id, dataset_id, access_token)
+latest_refresh = refresh_status_df.iloc[0]  # Get the most recent refresh record
+status = latest_refresh["STATUS"]
+
+# Capture error message if the status is 'Failed'
+error_message = latest_refresh.get("MESSAGE", "No error message available") if status == "Failed" else None
+
+print(f"Refresh Status: {status}")
+
+if error_message:
+    print(f"Error Message: {error_message}")
+
+# Example logging to Snowflake
+log_refresh_to_snowflake(group_id, dataset_id, latest_refresh.get("STARTTIME"), latest_refresh.get("ENDTIME"), status, error_message)
+
+------------
+
 refresh_status_df = get_pbi_refresh(group_id, dataset_id, access_token)
 latest_refresh = refresh_status_df.iloc[0]  # Get the most recent refresh record
 status = latest_refresh["STATUS"]
