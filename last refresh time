@@ -1,4 +1,54 @@
+def get_all_report_ids():
+    cursor = conn.cursor()
+    query = "SELECT DISTINCT REPORT_ID FROM TEAM_AUTO_DSS_RMKTOPS_P.CORE.PBI_CONFIG"
+    cursor.execute(query)
+    report_ids = [row[0] for row in cursor.fetchall()]
+    cursor.close()
+    return report_ids
 
+def get_config_values(report_id):
+    cursor = conn.cursor()
+    query = """
+    SELECT CONFIG_NAME, CONFIG_VALUE
+    FROM TEAM_AUTO_DSS_RMKTOPS_P.CORE.PBI_CONFIG
+    WHERE REPORT_ID = %s
+    """
+    cursor.execute(query, (report_id,))
+    results = dict(cursor.fetchall())
+    cursor.close()
+    return results
+
+def refresh_all_reports():
+    report_ids = get_all_report_ids()
+    for report_id in report_ids:
+        print(f"Fetching config for Report ID: {report_id}")
+        config_values = get_config_values(report_id)
+        
+        if not config_values:
+            print(f"No configuration found for Report ID: {report_id}. Skipping.")
+            continue
+        
+        print(f"Config Values: {config_values}")
+
+        # Assuming your existing functions like wait_for_refresh or log_refresh_to_snowflake are called here
+        group_id = config_values.get('GROUP_ID')
+        dataset_id = config_values.get('DATASET_ID')
+        access_token = config_values.get('ACCESS_TOKEN')
+        polling_interval = int(config_values.get('POLLING_INTERVAL', 60))
+        max_attempts = int(config_values.get('MAX_ATTEMPTS', 3))
+
+        print(f"Starting refresh for Report ID: {report_id}")
+        status = wait_for_refresh(group_id, dataset_id, access_token, polling_interval)
+        print(f"Refresh Status for Report ID {report_id}: {status}")
+
+        # Log the refresh status to Snowflake (assuming error_message is handled)
+        error_message = "No Error" if status == "Completed" else "Refresh Failed"
+        log_refresh_to_snowflake(group_id, dataset_id, "start_time_placeholder", "end_time_placeholder", status, error_message)
+
+# Example call
+refresh_all_reports()
+
+--------------------
 refresh_status_df = get_pbi_refresh(group_id, dataset_id, access_token)
 latest_refresh = refresh_status_df.iloc[0]  # Get the most recent refresh record
 status = latest_refresh["STATUS"]
