@@ -1,3 +1,81 @@
+Here’s a clear and structured reasoning for your approach:  
+
+---
+
+## **Reasoning for Creating Dependency Between DBT Job and PBI Refresh**
+
+### **Background**  
+The objective was to establish a reliable dependency between the completion of a DBT job and the subsequent refresh of a Power BI (PBI) report. The challenge stemmed from the fact that while the DBT job loads data into Snowflake, PBI fetches data from Azure (AZ) Snowflake with a **15-minute replication delay**.  
+
+To manage this dependency, I evaluated two possible approaches:  
+
+---
+
+### **Option 1: Direct Access to AZ Snowflake for Validation**
+- **Approach:** After the DBT job completes, Python would directly connect to AZ Snowflake, check for the view’s availability, and confirm the data presence before triggering the PBI refresh.  
+- **Challenges Faced:**  
+  - Establishing a direct connection to AZ Snowflake using Python did not work due to **connectivity issues** and **access restrictions**.  
+  - Additional efforts to resolve authentication and network permissions were unsuccessful.  
+  - Due to these limitations, this approach had to be **discarded**.  
+
+---
+
+### **Option 2: Time-Buffer Based Approach**
+- **Approach:**  
+  - After the DBT job completion, check its **status** using Python.  
+  - If the job is successful, wait for **30 minutes** to account for the delay in AZ Snowflake replication.  
+  - Implement a **loop** to initiate the PBI refresh and monitor its status.  
+  - Continue until the PBI refresh completes successfully.  
+- **Outcome:** This method ensured reliable synchronization without additional access to AZ Snowflake. It was a **practical and effective solution**.  
+
+---
+
+### **Enhancements Implemented**
+Following the successful implementation of Option 2, further improvements were made based on **Sathya’s suggestions**:  
+1. **Best Practices Implementation:**  
+    - Improved error handling and retry mechanisms to manage unexpected failures during the refresh.  
+    - Logging key details (start time, end time, status, error messages) to Snowflake for monitoring and audit purposes.  
+
+2. **Centralized Configuration Management:**  
+    - Avoided hardcoding by creating a **Snowflake configuration table** to store report-specific parameters (e.g., Group ID, Dataset ID, Attempt Limits, Polling Frequency, and Error Thresholds).  
+    - Python code fetches these values dynamically, ensuring flexibility and maintainability.  
+
+3. **Code Consolidation:**  
+    - Combined all PBI refreshes into a **single Python script**.  
+    - Implemented efficient looping and parallel execution to manage multiple report refreshes.  
+
+---
+
+### **Conclusion**  
+- The second approach was successfully implemented to achieve a **seamless dependency** between the DBT job and PBI refresh.  
+- By incorporating best practices and dynamic configurations, the solution became **scalable** and **easier to maintain**.  
+- The streamlined approach ensured **accurate data** availability in PBI without manual intervention.
+------------------------------------------------------------------------------------------------------------------------
+**Subject:** Proposal to Eliminate View Creation from DBT and Impact on Current Jira Stories  
+
+Hi [Manager's Name],  
+
+Based on my recent research, I have identified an opportunity to optimize our current process by eliminating the view creation step from DBT.  
+
+### **Proposed Change**  
+- **Eliminating View Creation in DBT:** This will ensure that all data is **immediately available** in AZ Snowflake without any replication delays.  
+- **Simplified Dependency Management:** Since there will be no data transfer from Snowflake to AZ Snowflake, the dependency on replication will no longer be necessary. We can now directly check for data availability in Snowflake and trigger the PBI refresh accordingly.  
+
+### **Impact on Current Jira Stories**  
+Due to this design shift, the following adjustments will be required:  
+1. **Design Changes:** Update the design for all PBI reports to align with the new approach.  
+2. **DBT Adjustments:** Remove unnecessary view creation from all DBT jobs.  
+3. **Dependency Redesign:** Implement a simplified dependency mechanism for DBT jobs and PBI refreshes.  
+4. **Best Practice Implementation:** Ensure the revised process follows best practices for monitoring and logging.  
+
+This may result in some **delays** in completing my current Jira stories. I will ensure to provide updated timelines once the revised approach is finalized.  
+
+Please let me know your thoughts on this, and I’m happy to discuss further if needed.  
+
+Best regards,  
+**[Your Name]**
+-------------------------------------------------------------------------------------------------------------------------------------------
+
 def get_all_report_ids():
     cursor = conn.cursor()
     query = "SELECT DISTINCT REPORT_ID FROM TEAM_AUTO_DSS_RMKTOPS_P.CORE.PBI_CONFIG"
