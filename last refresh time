@@ -1,3 +1,24 @@
+Hi [Recipient's Name],
+
+I have attached the updated Snowflake code for the daily and month-end reports, which are currently in use. Kindly review and let us know your feedback.
+
+Additionally, please note the following:
+
+Using all the revised Excel files, we have updated the historical data in the UAT tables, and the Power BI report is published on the UAT workspace for your review.
+
+For the February month data, we have not used the Excel file shared by you, as it has already been reviewed and approved.
+
+Please note that the UAT query was already using PHA (Physical Auction), so we have not replaced the February month data.
+
+Looking forward to your feedback.
+
+Best regards,
+Raj Maheshwari
+
+-------------
+
+
+
 Subject: Request for Assistance in Finding a Text Comparison Tool
 
 Hi [Manager's Name],
