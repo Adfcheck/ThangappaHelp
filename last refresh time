@@ -1,3 +1,21 @@
+Subject: Request for Assistance in Finding a Text Comparison Tool
+
+Hi [Manager's Name],
+
+I hope this email finds you well.
+
+I wanted to check if we have any application available for comparing two text files. It would be extremely helpful for me, especially considering the recent developments where comparing files has been a frequent requirement.
+
+If we don't have any such tool available, could you please assist in installing a text comparison plugin for Notepad++? I believe it would streamline the comparison process and save significant time.
+
+As an alternative, I have been using dbt by creating and committing files, then overwriting them with the updated version to view the changes. However, a dedicated comparison tool would be much more efficient.
+
+Thank you in advance for your support. Please let me know if you need any further details.
+
+Best regards,
+Raj Maheshwari
+----------------------
+
 Thank you for sharing the files. I have received them and will start working on updating the historical data in the table and correcting the script for the next refresh soon.
 Could you please confirm if this script change is only for the monthly report or if any changes are required for the daily report as well?
 I'll reach out if I have any questions once I begin.
