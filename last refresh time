@@ -1,4 +1,10 @@
+    if is_within_schedule(scheduled_time_cst):
+        print(f"Current time is within the schedule for Report ID: {report_id}. Triggering refresh.")
+        refresh_pbi(report_id)
+    else:
+        print(f"Current time is outside the schedule for Report ID: {report_id}. Skipping refresh.")
 
+------
 import pytz
 from datetime import datetime, timedelta
 -------
