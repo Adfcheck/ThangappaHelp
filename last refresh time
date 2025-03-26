@@ -1,4 +1,63 @@
+Here's a possible representation of how the workflow diagram could be structured:  
 
+### **Workflow Overview for DBT Job and PBI Refresh**  
+
+**1. Start**  
+- Initiate the process.  
+
+**2. Get All Report IDs**  
+- Fetch all report IDs to process using the function `get_all_report_ids()`.  
+
+**3. Retrieve Configuration**  
+- For each report ID, fetch configuration using `get_config_values(report_id)`.  
+
+**4. Check Configuration**  
+- If no configuration is found, print an error and move to the next report.  
+
+**5. Check DBT Job Status**  
+- Query the log table to check if the DBT job is **Failed**, **Skipped**, or **Not Started**.  
+
+**6. Conditional Check**  
+- **If Job Not Ran** → Continue to run the DBT job.  
+- **If Job Completed** → End process for that report.  
+
+**7. Run DBT Job**  
+- Trigger the DBT job using `trigger_dbt_job()`.  
+
+**8. Monitor Status**  
+- Check the status using `get_job_run_status()`.  
+
+**9. Status Evaluation**  
+- **If Status = Success** → Proceed to the next step.  
+- **If Status = Error** → Log error and stop further processing.  
+
+**10. Check Schedule**  
+- Verify if the current time is within the scheduled time using `is_within_schedule()`.  
+
+**11. Conditional Check**  
+- **If Within Schedule** → Proceed to refresh the PBI.  
+- **If Not Within Schedule** → Print the message and stop further processing.  
+
+**12. Refresh PBI**  
+- Call the `refresh_pbi()` function.  
+- Track the refresh attempt.  
+
+**13. Monitor PBI Status**  
+- Perform up to 3 attempts for PBI refresh with waiting intervals using `wait_for_refresh()`.  
+
+**14. Conditional Check**  
+- **If PBI Refresh Success** → Print success message.  
+- **If PBI Refresh Fails After 3 Attempts** → Log the failure to Snowflake.  
+
+**15. End**  
+- Process completed for that report. Move to the next report ID.  
+
+---
+
+Would you like me to generate a visual representation (flowchart) for this workflow?
+
+
+-----------------
 import snowflake.connector
 
 def get_not_successful_dbt_job_ids(connection_params):
