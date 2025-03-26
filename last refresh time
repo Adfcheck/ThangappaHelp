@@ -1,4 +1,75 @@
-    if is_within_schedule(scheduled_time_cst):
+
+import snowflake.connector
+
+def get_not_successful_dbt_job_ids(connection_params):
+    """
+    Fetches not successful dbt job IDs using the given query.
+
+    Args:
+        connection_params (dict): Dictionary containing Snowflake connection details.
+
+    Returns:
+        list: List of job IDs that are not successful.
+    """
+    query = """
+    -- dbt not started
+    select CONFIG_NAME , CONFIG_VALUE
+    from TEAM_AUTO_DSS_RMKTOPS_P.CORE.PBI_CONFIG con
+    inner join team_auto_dss_rmktops_p.core.rmkt_report_details rd
+    on rd.reportid=con.report_id
+    left join team_auto_dss_rmktops_p.core.rmkt_process_log_details logd
+    on con.process_name = rd.process_name and date(logd.process_scheduledate) = date(current_date)
+    where ((logd.reportid is null) 
+        or (logd.reportid is not null and lower(process_platform) != 'dbt' ))
+    AND UPPER(CONFIG_NAME) ='JOB_ID'
+    
+    union
+    
+    select CONFIG_NAME , CONFIG_VALUE
+    from TEAM_AUTO_DSS_RMKTOPS_P.CORE.PBI_CONFIG con
+    inner join team_auto_dss_rmktops_p.core.rmkt_report_details rd
+    on rd.reportid=con.report_id
+    left join team_auto_dss_rmktops_p.core.rmkt_process_log_details logd
+    on con.process_name = rd.process_name and date(logd.process_scheduledate) = date(current_date)
+    where lower(logd.status) <> 'completed'
+    AND UPPER(CONFIG_NAME) ='JOB_ID'
+    AND lower(process_platform) = 'dbt'
+    """
+    try:
+        # Connect to Snowflake
+        conn = snowflake.connector.connect(**connection_params)
+        cursor = conn.cursor()
+
+        # Execute query
+        cursor.execute(query)
+        results = cursor.fetchall()
+
+        # Extract Job IDs
+        job_ids = [row[1] for row in results]  # Assuming CONFIG_VALUE contains Job ID
+        return job_ids
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return []
+
+    finally:
+        cursor.close()
+        conn.close()
+
+# Example Usage
+connection_params = {
+    "user": "<your_username>",
+    "password": "<your_password>",
+    "account": "<your_account>.snowflakecomputing.com",
+    "warehouse": "<your_warehouse>",
+    "database": "<your_database>",
+    "schema": "<your_schema>"
+}
+job_ids = get_not_successful_dbt_job_ids(connection_params)
+print("Not Successful DBT Job IDs:", job_ids)
+------------------
+
+if is_within_schedule(scheduled_time_cst):
         print(f"Current time is within the schedule for Report ID: {report_id}. Triggering refresh.")
         refresh_pbi(report_id)
     else:
