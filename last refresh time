@@ -1,3 +1,41 @@
+INSERT INTO config_table (report_id, config_key, config_value)
+VALUES 
+('12345', 'scheduled_time_cst', '08:00'); -- Time in HH:MM format (CST)
+---
+
+
+def get_config_from_snowflake(report_id, config_key):
+    conn = snowflake.connector.connect(user='user', password='password', account='account')
+    cursor = conn.cursor()
+    query = f"SELECT config_value FROM config_table WHERE report_id = '{report_id}' AND config_key = '{config_key}'"
+    cursor.execute(query)
+    result = cursor.fetchone()
+    conn.close()
+    return result[0] if result else None
+
+def is_within_schedule(report_id):
+    scheduled_time_cst = get_config_from_snowflake(report_id, 'scheduled_time_cst')
+
+    if not scheduled_time_cst:
+        print(f"No scheduled time set for Report ID: {report_id}")
+        return False
+
+    # Convert to CST and check current time
+    cst = pytz.timezone('America/Chicago')
+    current_time_cst = datetime.now(pytz.utc).astimezone(cst)
+
+    # Convert scheduled time to datetime
+    scheduled_time = datetime.strptime(scheduled_time_cst, "%H:%M").time()
+
+    # Add a buffer of ±10 minutes
+    buffer_minutes = 10
+    buffer_start = (datetime.combine(current_time_cst.date(), scheduled_time) - timedelta(minutes=buffer_minutes)).time()
+    buffer_end = (datetime.combine(current_time_cst.date(), scheduled_time) + timedelta(minutes=buffer_minutes)).time()
+
+    return buffer_start <= current_time_cst.time() <= buffer_end
+----------------
+
+
 Hi [Recipient's Name],
 
 I have attached the updated Snowflake code for the daily and month-end reports, which are currently in use. Kindly review and let us know your feedback.
