@@ -1,0 +1,40 @@
+// DBT Job and PBI Refresh Workflow (Editable)
+digraph {
+	S [label=Start]
+	A [label="Get All Report IDs (Not Ran or Failed)"]
+	B [label="Fetch Configuration using get_config_values()"]
+	C [label="Check Configuration"]
+	D [label="Check Scheduled Time using is_within_schedule()"]
+	E1 [label="Trigger DBT Job using trigger_dbt_job()"]
+	E2 [label="Log Error and End Process"]
+	F [label="Check Job Status using get_job_run_status()"]
+	G [label="Evaluate Status: DbJobRunStatus.SUCCESS"]
+	H1 [label="Check Max Attempts using max_attempts"]
+	H2 [label="Log Error: Max Attempts Reached"]
+	I [label="Refresh PBI using refresh_pbi()"]
+	J [label="Wait for Refresh using wait_for_refresh()"]
+	K1 [label="PBI Refresh Successful"]
+	K2 [label="Retry PBI Refresh if Attempt < Max Attempts"]
+	L [label="Log Refresh to Snowflake using log_refresh_to_snowflake()"]
+	E [label="End Process"]
+	S -> A
+	A -> B
+	B -> C
+	C -> D [label="Config Found"]
+	C -> E2 [label="Config Not Found"]
+	D -> E1 [label="Within Schedule"]
+	D -> E2 [label="Outside Schedule"]
+	E1 -> F
+	F -> G
+	G -> H1 [label=Success]
+	G -> E2 [label=Failed]
+	H1 -> I [label="Attempts Remaining"]
+	H1 -> H2 [label="Max Attempts Reached"]
+	I -> J
+	J -> K1 [label=Success]
+	J -> K2 [label=Failure]
+	K2 -> H1 [label=Retry]
+	H2 -> L
+	L -> E
+	K1 -> E
+}
