@@ -1,3 +1,56 @@
+Function Descriptions for Python Code
+
+1. get_pbi_refresh(groupid, datasetid, accessToken)
+
+Purpose:
+
+Fetches the status of a Power BI dataset refresh.
+
+Inputs:
+
+groupid (str): The Power BI group (workspace) ID.
+
+datasetid (str): The dataset ID in Power BI.
+
+accessToken (str): Access token for API authorization.
+
+Outputs:
+
+Returns a DataFrame containing the dataset refresh details.
+
+Logic:
+
+Sends a GET request to the Power BI API using the provided credentials.
+
+Decodes and parses the API response.
+
+Converts the response data to a DataFrame using Pandas.
+
+Ensures the DataFrame has a 'SERVICEEXCEPTIONJSON' column, adding it with NaN if missing.
+
+Prints an error message if the request fails.
+
+2. get_not_successful_dbt_job_ids()
+
+Purpose:
+
+Retrieves the list of failed or not successful dbt job IDs.
+
+Inputs:
+
+None
+
+Outputs:
+
+Returns a list of unsuccessful dbt job IDs.
+
+Logic:
+
+This function is likely designed to query the database or logs to get job IDs that have failed or were not successful.
+
+The implementation isn't visible in the provided code, but typically, it would execute a query to fetch these IDs using Snowflake or any other log source.
+
+
 ### Function Documentation and Comments for Code
 
 #### 1. `refresh_pbi(group, dataset, token, base_url=None)`
