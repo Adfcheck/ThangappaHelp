@@ -1,3 +1,12 @@
+Based on our discussion yesterday, I am considering assigning a unique report ID to each report.  
+
+Currently, we have multiple report IDs for a single report due to factors such as additional tabs, different delivery modes, or varying views. This makes it challenging to retrieve log details effectively.  
+
+By assigning a unique report ID to each report, we can store logs in a more organized manner. For further clarity, we can introduce a **delivery mode** column to differentiate logs where necessary.
+---------------------------------------------------
+
+
+
 Here's a possible representation of how the workflow diagram could be structured:  
 
 ### **Workflow Overview for DBT Job and PBI Refresh**  
