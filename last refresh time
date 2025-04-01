@@ -1,3 +1,23 @@
+SELECT DISTINCT con.report_id
+FROM TEAM_AUTO_DSS_RMKTOPS_P.CORE.PBI_CONFIG con
+INNER JOIN team_auto_dss_rmktops_p.core.rmkt_report_details rd 
+    ON con.report_name = rd.reportname
+INNER JOIN team_auto_dss_rmktops_p.core.rmkt_process_log_details logd 
+    ON rd.reportid = logd.reportid
+WHERE logd.reportid IS NOT NULL 
+AND logd.process_platform ILIKE 'dbt'  -- Use ILIKE instead of LOWER() for case-insensitive comparison
+AND logd.status ILIKE 'completed'
+AND DATE(logd.process_scheduledate) = CURRENT_DATE
+AND NOT EXISTS (
+    SELECT 1 
+    FROM team_auto_dss_rmktops_p.core.rmkt_process_log_details loginner
+    WHERE loginner.reportid = logd.reportid 
+    AND loginner.process_platform <> 'dbt'  -- Avoid using LOWER() unless necessary
+    AND DATE(loginner.process_scheduledate) = CURRENT_DATE
+);
+
+--------
+
 Based on our discussion yesterday, I am considering assigning a unique report ID to each report.  
 
 Currently, we have multiple report IDs for a single report due to factors such as additional tabs, different delivery modes, or varying views. This makes it challenging to retrieve log details effectively.  
