@@ -1,3 +1,19 @@
+
+SELECT DISTINCT con.REPORT_ID
+FROM TEAM_AUTO_DSS_RMKTOPS_P.CORE.PBI_CONFIG con
+INNER JOIN team_auto_dss_rmktops_p.core.rmkt_report_details rd 
+    ON con.report_name = rd.reportname
+LEFT JOIN team_auto_dss_rmktops_p.core.rmkt_process_log_details logd 
+    ON rd.reportid = logd.reportid 
+    AND DATE(logd.process_scheduledate) = CURRENT_DATE
+WHERE 
+    -- DBT not started OR another process ran instead
+    (logd.reportid IS NULL OR logd.process_platform NOT ILIKE 'dbt')
+    -- OR DBT started but is incomplete
+    OR (logd.process_platform ILIKE 'dbt' AND logd.status NOT ILIKE 'completed');
+
+
+
 SELECT DISTINCT con.report_id
 FROM TEAM_AUTO_DSS_RMKTOPS_P.CORE.PBI_CONFIG con
 INNER JOIN team_auto_dss_rmktops_p.core.rmkt_report_details rd 
