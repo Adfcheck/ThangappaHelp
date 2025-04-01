@@ -1,4 +1,20 @@
+SELECT 
+    con.REPORT_ID,
+    COUNT(logd.log_id) AS failed_attempt_count
+FROM TEAM_AUTO_DSS_RMKTOPS_P.CORE.PBI_CONFIG con
+INNER JOIN team_auto_dss_rmktops_p.core.rmkt_report_details rd 
+    ON con.report_name = rd.reportname
+INNER JOIN team_auto_dss_rmktops_p.core.rmkt_process_log_details logd 
+    ON rd.reportid = logd.reportid
+    AND DATE(logd.process_scheduledate) = CURRENT_DATE
+WHERE 
+    LOWER(logd.process_platform) <> 'dbt'  -- Exclude DBT runs
+    AND LOWER(logd.status) = 'failed'      -- Only failed attempts
+GROUP BY con.REPORT_ID
+ORDER BY failed_attempt_count DESC;
 
+
+---------------
 SELECT DISTINCT con.REPORT_ID
 FROM TEAM_AUTO_DSS_RMKTOPS_P.CORE.PBI_CONFIG con
 INNER JOIN team_auto_dss_rmktops_p.core.rmkt_report_details rd 
