@@ -1,3 +1,86 @@
+report_name = "Report_XYZ"
+config_values = get_config_values(report_name)
+
+if not config_values:
+    print(f"No configuration found for Report: {report_name}. Skipping.")
+else:
+    print(f"Config Values: {config_values}")
+
+    groupID = config_values.get("PBI_GROUP_ID")
+    datasetID = config_values.get("PBI_DATASET_ID")
+    polling_frequency = int(config_values.get("POLLING_FREQUENCY", 60))
+    max_attempts = int(config_values.get("MAX_PER_PROGRAM_ATTEMPTS", 3))
+    scheduled_time = config_values.get("SCHEDULED_TIME_CST")
+    manual_dbt_refresh = config_values.get("MANUAL_DBT_REFRESH")
+    manual_report_refresh = config_values.get("MANUAL_REPORT_REFRESH")
+    refresh_group = config_values.get("REFRESH_GROUP_NAME")
+-
+def get_config_values(report_name):
+    """
+    Fetches configuration values for a report from the old table,
+    ensuring DBT-specific values are included in a single row.
+    
+    :param report_name: The name of the report.
+    :return: A dictionary containing configuration values.
+    """
+    conn = get_snowflake_connection()
+    cursor = conn.cursor()
+
+    query = f"""
+        SELECT 
+            p.REPORT_NAME, 
+            p.PBI_GROUP_ID, 
+            p.PBI_DATASET_ID, 
+            p.MAX_PER_PROGRAM_ATTEMPTS, 
+            p.POLLING_FREQUENCY, 
+            p.SCHEDULED_TIME_CST, 
+            p.MANUAL_REPORT_REFRESH, 
+            p.REFRESH_GROUP_NAME,
+            COALESCE(dbt.MANUAL_DBT_REFRESH, '') AS MANUAL_DBT_REFRESH
+        FROM OLD_CONFIG_TABLE p
+        LEFT JOIN OLD_CONFIG_TABLE dbt 
+            ON p.REPORT_NAME = dbt.REPORT_NAME 
+            AND LOWER(dbt.PROCESS_PLATFORM) = 'dbt'
+        WHERE LOWER(p.PROCESS_PLATFORM) <> 'dbt'
+        AND p.REPORT_NAME = '{report_name}'
+    """
+
+    cursor.execute(query)
+    result = cursor.fetchone()
+    conn.close()
+
+    if not result:
+        return None
+
+    columns = ["REPORT_NAME", "PBI_GROUP_ID", "PBI_DATASET_ID", "MAX_PER_PROGRAM_ATTEMPTS", 
+               "POLLING_FREQUENCY", "SCHEDULED_TIME_CST", "MANUAL_REPORT_REFRESH", 
+               "REFRESH_GROUP_NAME", "MANUAL_DBT_REFRESH"]
+    
+    return dict(zip(columns, result))
+--
+SELECT 
+    p.REPORT_NAME, 
+    p.PBI_GROUP_ID, 
+    p.PBI_DATASET_ID, 
+    p.MAX_PER_PROGRAM_ATTEMPTS, 
+    p.POLLING_FREQUENCY, 
+    p.SCHEDULED_TIME_CST, 
+    p.MANUAL_REPORT_REFRESH, 
+    p.REFRESH_GROUP_NAME,
+    -- Fetch DBT-specific values from the DBT row
+    COALESCE(dbt.MANUAL_DBT_REFRESH, '') AS MANUAL_DBT_REFRESH
+FROM OLD_CONFIG_TABLE p
+LEFT JOIN OLD_CONFIG_TABLE dbt 
+    ON p.REPORT_NAME = dbt.REPORT_NAME 
+    AND LOWER(dbt.PROCESS_PLATFORM) = 'dbt'
+WHERE LOWER(p.PROCESS_PLATFORM) <> 'dbt';
+------------------------------------
+
+
+
+
+
+
 SELECT 
     con.REPORT_ID,
     COUNT(logd.log_id) AS failed_attempt_count
