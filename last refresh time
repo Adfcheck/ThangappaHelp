@@ -1,3 +1,78 @@
+
+import time
+
+def refresh_dbt_skip_failed_reports():
+    """
+    Refreshes DBT and PBI datasets for reports that have configurations defined.
+    If a report's DBT job fails, it skips further processing for that report.
+    """
+    report_list = get_reportids_dbt_job()  # Get list of reports requiring DBT jobs
+
+    for report in report_list:
+        print(f"Fetching config for Report ID: {report}")
+        config_values = get_config_values(report)  # Fetch report configuration
+
+        if not config_values:
+            print(f"No configuration found for Report ID: {report}. Skipping.")
+            continue  # Skip to next report if no config is found
+
+        print(f"Config Values: {config_values}")
+
+        # Extract configuration values
+        groupID = config_values.get("PBI_GROUP_ID")
+        datasetID = config_values.get("PBI_DATASET_ID")
+        polling_frequency = int(config_values.get("POLLING_FREQUENCY", 60))  # Default to 60 sec if missing
+        max_attempts = int(config_values.get("MAX_PER_PROGRAM_ATTEMPTS", 3))  # Default to 3 attempts
+        job_ID = int(config_values.get("JOB_ID", 0))  # Default 0 if not provided
+        account_ID = int(config_values.get("ACCOUNT_ID", 0))  # Default 0 if not provided
+        scheduled_time_cst = config_values.get("SCHEDULED_TIME_CST")  # Time for job execution
+        report_id = config_values.get("reportid")
+
+        # Check if the report is within the allowed schedule
+        if is_within_schedule(scheduled_time_cst):
+            time.sleep(20)  # Wait before checking DBT status
+
+            # Trigger the DBT job and check its status
+            job_run_id = trigger_dbt_job(account_ID, job_ID, API_KEY)  
+            status = get_job_run_status(account_ID, job_run_id, API_KEY)
+
+            print(f"DBT Job Status: {DbtJobRunStatus(status).name}")
+
+            # If DBT job is successful, proceed with PBI refresh
+            if status == DbtJobRunStatus.SUCCESS:
+                attempt = 0  # Track PBI refresh attempts
+
+                while attempt < max_attempts:
+                    refresh_pbi(groupID, datasetID, API_KEY)  # Trigger PBI refresh
+                    status = wait_for_refresh(report_id, groupID, datasetID, API_KEY)  # Wait for completion
+
+                    print(f"Attempt {attempt + 1}: Status Code = {status}")
+
+                    if status == "Completed":
+                        print("Success: Dataset refresh triggered.")
+                        break  # Exit loop if refresh succeeds
+                    else:
+                        attempt += 1
+                        if attempt < max_attempts:
+                            print(f"Retrying in {polling_frequency // 60} minutes...")
+                            time.sleep(polling_frequency)  # Wait before retrying
+
+                # If max attempts reached, log failure
+                if attempt == max_attempts:
+                    log_refresh_to_snowflake(groupID, datasetID, start_time, end_time, "failed")
+                    print("Failed to refresh dataset after 3 attempts.")
+                    break  # Exit while loop
+
+            # If DBT job fails, log and skip the report
+            elif status == DbtJobRunStatus.ERROR:
+                print(f"DBT Job failed for Report ID: {report_id}. Skipping refresh.")
+                break
+
+        else:
+            print(f"Current time is outside the schedule for Report ID: {report_id}. Skipping refresh.")
+
+
+
 report_name = "Report_XYZ"
 config_values = get_config_values(report_name)
 
