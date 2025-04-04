@@ -1,3 +1,5 @@
+error_message_value = f"'{error_message}'" if error_message else "NULL"
+error_ind_value = f"{ERROR_IND}" if ERROR_IND is not None else "NULL"
 
 import time
 
