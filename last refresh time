@@ -1,3 +1,41 @@
+-- PBI refresh
+SELECT *
+FROM team_auto_dss_rmktops_p.core.rmkt_report_details rd
+INNER JOIN team_auto_dss_rmktops_p.core.rmkt_process_log_details logd
+    ON rd.reportid = logd.reportid
+WHERE  
+    logd.reportid IS NOT NULL  
+    AND logd.process_platform = 'dbt'  
+    AND logd.status = 'completed'  
+    AND DATE(logd.process_scheduleddate) = CURRENT_DATE  
+    -- Ensure no DBT process is still running  
+    AND NOT EXISTS (  
+        SELECT 1  
+        FROM team_auto_dss_rmktops_p.core.rmkt_process_log_details loginner  
+        INNER JOIN team_auto_dss_rmktops_p.core.rmkt_report_details d  
+            ON loginner.reportid = d.reportid  
+        WHERE d.reportname = rd.reportname  
+        AND DATE(loginner.process_scheduleddate) = CURRENT_DATE  
+        AND loginner.process_platform = 'dbt'  
+        AND loginner.status <> 'completed'  
+    )  
+    -- Ensure PBI has not already completed  
+    AND NOT EXISTS (  
+        SELECT 1  
+        FROM team_auto_dss_rmktops_p.core.rmkt_process_log_details loginner  
+        INNER JOIN team_auto_dss_rmktops_p.core.rmkt_report_details d  
+            ON loginner.reportid = d.reportid  
+        WHERE d.reportname = rd.reportname  
+        AND DATE(loginner.process_scheduleddate) = CURRENT_DATE  
+        AND loginner.process_platform = 'PBI'  
+        AND loginner.status = 'completed'  
+    );
+----------------------
+
+
+
+
+
 -- PBI refresh  
 SELECT *  
 FROM team_auto_dss_rmktops_p.core.rmkt_report_details rd  
