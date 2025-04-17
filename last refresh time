@@ -1,3 +1,17 @@
+        # Build log message
+        if status == "Failed":
+            error_detail = latest_refresh.get("MESSAGE", "No error message available")
+        else:
+            error_detail = ""
+
+        # Combine custom log with error message (if any)
+        log_details = ""
+        if log_detail_prefix:
+            log_details += log_detail_prefix
+        if error_detail:
+            log_details += "\n" + error_detail if log_details else error_detail
+--------------
+
 from concurrent.futures import ThreadPoolExecutor
 import pytz
 from datetime import datetime
