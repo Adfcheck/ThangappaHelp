@@ -1,3 +1,16 @@
+# Convert to EST and check current time
+est = pytz.timezone('America/New_York')
+current_time_est = datetime.now(pytz.utc).astimezone(est)
+
+# Convert scheduled time to datetime
+scheduled_time = datetime.strptime(scheduled_time_cst, "%H:%M").time()
+
+print(scheduled_time)
+print(current_time_est)
+
+-------------------
+
+
 -- PBI refresh
 SELECT *
 FROM team_auto_dss_rmktops_p.core.rmkt_report_details rd
