@@ -1,3 +1,82 @@
+from concurrent.futures import ThreadPoolExecutor
+import pytz
+from datetime import datetime
+import time
+
+def process_report(report):
+    print(f"\nFetching config for Report ID: {report}")
+    config_values = get_config(report)
+
+    if not config_values:
+        print(f"No configuration found for Report ID: {report}. Skipping.")
+        return
+
+    print(f"Config Values: {config_values}")
+
+    # Extract configuration values
+    groupID = config_values.get("PBI_GROUP_ID")
+    datasetID = config_values.get("PBI_DATASET_ID")
+    polling_frequency = int(config_values.get("POLLING_FREQUENCY", 60))
+    max_attempts = int(config_values.get("MAX_PER_PROGRAM_ATTEMPTS", 3))
+    report_id = config_values.get("REPORTID")
+
+    # Check time validity
+    if is_within_schedule(report) or MANUAL_DIR_REFRESH:
+        update_manual_refresh_flag_to_snowflake(report, 'PBI')
+
+        # Attempt dataset refresh
+        attempt = 1
+        while attempt <= max_attempts:
+            print(f"Attempt #{attempt}: Triggering refresh for Report ID: {report}")
+            status = wait_for_refresh(report_id, groupID, datasetID, access_t)
+
+            print(f"Status Code = {status}")
+            if status == "Completed":
+                print(f"Success: Dataset refresh triggered for Report ID: {report}")
+                break
+            else:
+                attempt += 1
+                if attempt <= max_attempts:
+                    print(f"Retrying in {polling_frequency // 60} minutes...")
+                    time.sleep(polling_frequency)
+                else:
+                    print(f"Failed to refresh dataset after {max_attempts} attempts for Report ID: {report}")
+                    log_refresh_to_snowflake(groupID, datasetID, start_time, end_time, "failed")
+        return
+
+    elif status == "DbJobRunStatus.Error":
+        print(f"DBT Job Failed for Report ID: {report}. Skipping refresh.")
+    else:
+        print(f"Current time is outside the schedule for Report ID: {report}. Skipping refresh.")
+
+def refresh_pbi_skip_failed_reports():
+    print("Refreshing PBI datasets in parallel...")
+
+    reportname = get_reportname_for_pbi_refresh()
+    if reportname is None:
+        print("No reports found for refresh.")
+        return
+
+    report_list = [reportname] if isinstance(reportname, str) else reportname
+    print(f"Report List: {report_list}")
+
+    # Run parallel execution with limited threads
+    with ThreadPoolExecutor(max_workers=5) as executor:  # Tune worker count based on performance
+        executor.map(process_report, report_list)
+------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Convert to EST and check current time
 est = pytz.timezone('America/New_York')
 current_time_est = datetime.now(pytz.utc).astimezone(est)
