@@ -1,4 +1,8 @@
-        # Build log message
+default_time = datetime.strptime("00:00:00", "%H:%M:%S")
+from datetime import datetime
+
+
+# Build log message
         if status == "Failed":
             error_detail = latest_refresh.get("MESSAGE", "No error message available")
         else:
