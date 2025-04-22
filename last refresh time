@@ -1,3 +1,60 @@
+-
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import datetime
+import time
+
+def trigger_dbt_job_for_report(report):
+    config_values = get_config_values(report)
+    if not config_values:
+        print(f"No configuration found for Report ID: {report}. Skipping.")
+        return
+
+    # Extract configuration
+    job_ID = int(config_values.get("DBT_JOB", 0))
+    account_ID = int(config_values.get("ACCOUNT_ID", 0))
+    scheduled_time_cst = config_values.get("SCHEDULED_TIME_CST")
+    report_id = config_values.get("REPORTID")
+    reportname = config_values.get("REPORT_NAME")
+    MANUAL_DBT_REFRESH = config_values.get("MANUAL_DBT_REFRESH")
+
+    # Check schedule
+    if is_within_schedule(report) or MANUAL_DBT_REFRESH:
+        print(f"Triggering DBT job for Report ID: {report}")
+        update_manualrefresh_flag_to_snowflake(reportname, 'dbt')
+
+        job_run_id = trigger_dbt_job(account_ID, job_ID, API_KEY)
+
+        polling_frequency = 30
+        while True:
+            time.sleep(polling_frequency)
+            status = get_job_run_status(account_ID, job_ID, job_run_id, API_KEY)
+            status_str = DbtJobRunStatus(status).name
+            print(f"DBT job status for Report ID {report_id}: {status_str}")
+
+            if status == DbtJobRunStatus.SUCCESS:
+                print(f"Success: DBT job for Report ID {report_id}")
+                break
+            elif status == DbtJobRunStatus.ERROR:
+                print(f"Failed: DBT job for Report ID {report_id}")
+                break
+    else:
+        print(f"Current time is outside schedule for Report: {report_id}. Skipping refresh.")
+
+def refresh_dbt_skip_failed_reports():
+    reportname = get_reportnames_for_dbt_job()
+    if not reportname:
+        print("No report names found.")
+        return
+
+    report_list = list(reportname) if not isinstance(reportname, list) else reportname
+
+    with ThreadPoolExecutor(max_workers=5) as executor:  # Adjust number of workers as needed
+        futures = [executor.submit(trigger_dbt_job_for_report, report) for report in report_list]
+
+        for future in as_completed(futures):
+            future.result()  # to raise any exceptions if occurred
+
+-----------------
 default_time = datetime.strptime("00:00:00", "%H:%M:%S")
 from datetime import datetime
 
