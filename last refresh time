@@ -1,3 +1,52 @@
+CREATE OR REPLACE VIEW vw_reports_to_refresh_today AS
+WITH calendar AS (
+    SELECT 
+        calendar_date,
+        dayname,
+        dayofweek,
+        day_of_month,
+        business_day_in_month_num
+    FROM AUTO_DW_P.DM_AUTO_FINANCE.V_TT_CALENDAR_RUV
+    WHERE calendar_date = CURRENT_DATE()
+),
+daily_reports AS (
+    SELECT reportname
+    FROM TEAM_AUTO_DSS_RMKTOPS.P_CORE.RMKT_PROCESS_STATUS
+    WHERE DBT_SCHEDULE_FREQUENCY ILIKE 'Daily%'  -- Matches 'Daily', 'Daily (Mon - Fri)'
+),
+weekly_reports AS (
+    SELECT reportname
+    FROM TEAM_AUTO_DSS_RMKTOPS.P_CORE.RMKT_PROCESS_STATUS, calendar
+    WHERE (
+        (DBT_SCHEDULE_FREQUENCY ILIKE 'Weekly - %' AND 
+         SPLIT_PART(DBT_SCHEDULE_FREQUENCY, ' - ', 2) = calendar.dayname)
+    )
+),
+monthly_reports AS (
+    SELECT reportname
+    FROM TEAM_AUTO_DSS_RMKTOPS.P_CORE.RMKT_PROCESS_STATUS, calendar
+    WHERE (
+        DBT_SCHEDULE_FREQUENCY ILIKE 'Monthly%' AND (
+            DBT_SCHEDULE_FREQUENCY ILIKE 'Monthly 1st day%' AND calendar.day_of_month = 1
+            OR DBT_SCHEDULE_FREQUENCY ILIKE 'Monthly 1st business day%' AND calendar.business_day_in_month_num = 1
+            OR DBT_SCHEDULE_FREQUENCY ILIKE 'Monthly 2nd business day%' AND calendar.business_day_in_month_num = 2
+            OR DBT_SCHEDULE_FREQUENCY ILIKE 'Monthly 4th business day%' AND calendar.business_day_in_month_num = 4
+            OR DBT_SCHEDULE_FREQUENCY ILIKE 'Monthly 4th BD' AND calendar.business_day_in_month_num = 4
+            OR DBT_SCHEDULE_FREQUENCY ILIKE 'Monthly - 1st' AND calendar.day_of_month = 1
+            OR DBT_SCHEDULE_FREQUENCY ILIKE 'Monthly - 4th' AND calendar.day_of_month = 4
+            OR DBT_SCHEDULE_FREQUENCY ILIKE 'Monthly - 15th' AND calendar.day_of_month = 15
+        )
+    )
+)
+SELECT DISTINCT reportname FROM daily_reports
+UNION
+SELECT DISTINCT reportname FROM weekly_reports
+UNION
+SELECT DISTINCT reportname FROM monthly_reports;
+
+-----------------
+
+
 -
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
