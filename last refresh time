@@ -1,3 +1,15 @@
+SPLIT_PART(DBT_SCHEDULE_FREQUENCY, ' - ', 2) = 
+    CASE calendar.dayname
+        WHEN 'Mon' THEN 'Monday'
+        WHEN 'Tue' THEN 'Tuesday'
+        WHEN 'Wed' THEN 'Wednesday'
+        WHEN 'Thu' THEN 'Thursday'
+        WHEN 'Fri' THEN 'Friday'
+        WHEN 'Sat' THEN 'Saturday'
+        WHEN 'Sun' THEN 'Sunday'
+    END
+-------
+
 CREATE OR REPLACE VIEW vw_reports_to_refresh_today AS
 WITH calendar AS (
     SELECT 
