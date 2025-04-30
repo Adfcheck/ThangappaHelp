@@ -1,3 +1,84 @@
+def fetch_report_list():
+    fetch_sql = "SELECT * FROM TEAM_AUTO_DSS_RMKTOPS_P.PUB_RMKT_OPS.RMKT_REPORT_LIST_ITAB"
+    cur.execute(fetch_sql)
+    rows = cur.fetchall()
+    column_names = [desc[0] for desc in cur.description]
+    df = pd.DataFrame(rows, columns=column_names)
+    return df
+
+def should_run_report(row, current_hour):
+    try:
+        report_hour = int(row['SP_PROD_SCHEDULETIME'].split(":")[0])
+    except:
+        report_hour = 0
+    return (
+        row['DBT_STATUS'] == 1 and 
+        row['SD_STATUS'] == 0 and 
+        row['MANUAL_DBT_REFRESH'] == 1 and 
+        (report_hour <= current_hour)
+    )
+
+def generate_excel(row, current_date):
+    sql_script = f"""
+        SELECT * EXCLUDE load_datetime 
+        FROM TEAM_AUTO_DSS_RMKTOPS_P.PUB_RMKT_OPS.{row['SP_VIEW_NAME']} 
+        WHERE DATE(load_datetime) = '{current_date}'
+    """
+    cur.execute(sql_script)
+    records = cur.fetchall()
+    column_names = [desc[0] for desc in cur.description]
+    df = pd.DataFrame(records, columns=column_names)
+
+    excel_filename = f"{row['SP_FILENAME']}{current_date}.xlsx"
+    buffer = BytesIO()
+    with pd.ExcelWriter(buffer, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name=row['SP_SHEET_NAME'])
+    return excel_filename, buffer
+
+def upload_report(row, filename, buffer):
+    # Placeholder: actual implementation for SharePoint/SMB etc.
+    print(f"Uploading {filename} for {row['REPORTNAME']}...")
+    pass
+
+def log_process_status(row, status):
+    log_sql = f"""
+        INSERT INTO TEAM_AUTO_DSS_RMKTOPS_P.PUB_RMKT_OPS.RMKT_REPORT_STATUS_ITAB
+        (REPORTNAME, STATUS, CREATED_DATE)
+        VALUES ('{row['REPORTNAME']}', '{status}', CURRENT_TIMESTAMP())
+    """
+    cur.execute(log_sql)
+    conn.commit()
+
+def run_report(row):
+    try:
+        log_process_status(row, 'started')
+        current_date = datetime.date.today()
+        excel_filename, buffer = generate_excel(row, current_date)
+        upload_report(row, excel_filename, buffer)
+        log_process_status(row, 'completed')
+        print(f"{row['REPORTNAME']} succeeded")
+    except Exception as e:
+        log_process_status(row, 'failed')
+        print(f"{row['REPORTNAME']} failed: {e}")
+
+def run_all_reports():
+    df = fetch_report_list()
+    current_hour = datetime.datetime.now().hour
+    for _, row in df.iterrows():
+        if should_run_report(row, current_hour) and 5 <= current_hour <= 19:
+            run_report(row)
+
+def run_single_report(report_name):
+    df = fetch_report_list()
+    df = df[df['REPORTNAME'] == report_name]
+    if not df.empty:
+        run_report(df.iloc[0])
+    else:
+        print(f"Report {report_name} not found.")
+
+------
+
+
 SELECT
     PROCESS_PLATFORM,
     CASE
