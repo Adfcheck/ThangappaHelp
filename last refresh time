@@ -1,3 +1,13 @@
+from datetime import datetime
+import pytz
+
+# Define the timezone for EST (Eastern Time)
+est = pytz.timezone('US/Eastern')
+
+# Get current time in EST
+current_est_time = datetime.now(est)
+
+
 pip install Office365-REST-Python-Client
 pip uninstall office365
 
