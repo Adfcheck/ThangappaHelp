@@ -6,6 +6,7 @@ est = pytz.timezone('US/Eastern')
 
 # Get current time in EST
 current_est_time = datetime.now(est)
+formatted = now_est.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3] + now_est.strftime(' %z')
 
 
 pip install Office365-REST-Python-Client
