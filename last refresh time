@@ -1,3 +1,134 @@
+import jaydebeapi
+import pandas as pd
+import datetime
+from io import BytesIO
+import openpyxl
+import config  # assume this provides cert credentials and paths
+from office365.sharepoint.client_context import ClientContext
+from office365.runtime.auth.client_credential import ClientCredential
+from smb.SMBConnection import SMBConnection
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.backends import default_backend
+
+# Setup connection (fill these in with your actual values)
+conn = jaydebeapi.connect(
+    "com.snowflake.client.jdbc.SnowflakeDriver",
+    "jdbc:snowflake://<account>.snowflakecomputing.com/?warehouse=<warehouse>&db=<db>&schema=<schema>",
+    {'user': '<user>', 'password': '<password>'},
+    "<path_to_snowflake_jdbc_driver>.jar"
+)
+cur = conn.cursor()
+
+def fetch_report_list():
+    fetch_sql = "SELECT * FROM TEAM_AUTO_DSS_RMKTOPS_P.PUB_RMKT_OPS.RMKT_REPORT_LIST_ITAB"
+    cur.execute(fetch_sql)
+    rows = cur.fetchall()
+    column_names = [desc[0] for desc in cur.description]
+    df = pd.DataFrame(rows, columns=column_names)
+    return df
+
+def should_run_report(row, current_hour):
+    try:
+        report_hour = int(row['SP_PROD_SCHEDULETIME'].split(":")[0])
+    except:
+        report_hour = 0
+    return (
+        row['DBT_STATUS'] == 1 and 
+        row['SD_STATUS'] == 0 and 
+        row['MANUAL_DBT_REFRESH'] == 1 and 
+        (report_hour <= current_hour)
+    )
+
+def generate_excel(row, current_date):
+    sql_script = f"""
+        SELECT * EXCLUDE load_datetime 
+        FROM TEAM_AUTO_DSS_RMKTOPS_P.PUB_RMKT_OPS.{row['SP_VIEW_NAME']} 
+        WHERE DATE(load_datetime) = '{current_date}'
+    """
+    cur.execute(sql_script)
+    records = cur.fetchall()
+    column_names = [desc[0] for desc in cur.description]
+    df = pd.DataFrame(records, columns=column_names)
+
+    excel_filename = f"{row['SP_FILENAME']}{current_date}.xlsx"
+    buffer = BytesIO()
+    with pd.ExcelWriter(buffer, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name=row['SP_SHEET_NAME'])
+    return excel_filename, buffer
+
+def get_pk(passphrase: str):
+    with open(config.pk_path, 'r') as f:
+        pkey = f.read().encode()
+        p_key = serialization.load_pem_private_key(pkey, password=passphrase.encode(), backend=default_backend())
+    return p_key
+
+def upload_report(row, excel_filename, buffer):
+    print(f"Uploading {excel_filename} for {row['REPORTNAME']}...")
+    buffer.seek(0)
+    if row['UPLOAD_LOCATION'] == 'SharePoint':
+        cert_credentials = {
+            "tenant": config.tenant_id,
+            "client_id": config.client_id,
+            "thumbprint": config.thumbprint,
+            "private_key": get_pk(config.passphrase),
+        }
+        ctx = ClientContext(config.siteurl2).with_client_certificate(**cert_credentials)
+        target_folder = ctx.web.get_folder_by_server_relative_url(row['SP_PATH'])
+        content_file = buffer.getvalue()
+        target_folder.upload_file(excel_filename, content_file).execute_query()
+    elif row['UPLOAD_LOCATION'] == 'SharedDrive':
+        conn_share = SMBConnection(config.username, config.password, config.client_name, config.server_name, use_ntlm_v2=True)
+        conn_share.connect(config.server_ip, 445)
+        with BytesIO(buffer.getvalue()) as file_obj:
+            conn_share.storeFile(config.share_name, row['SHARED_DRIVE_PATH'], file_obj)
+
+    else:
+        raise ValueError("Unknown upload location")
+
+def log_process_status(row, status):
+    log_sql = f"""
+        INSERT INTO TEAM_AUTO_DSS_RMKTOPS_P.PUB_RMKT_OPS.RMKT_REPORT_STATUS_ITAB
+        (REPORTNAME, STATUS, CREATED_DATE)
+        VALUES ('{row['REPORTNAME']}', '{status}', CURRENT_TIMESTAMP())
+    """
+    cur.execute(log_sql)
+    conn.commit()
+
+def run_report(row):
+    try:
+        log_process_status(row, 'started')
+        current_date = datetime.date.today()
+        excel_filename, buffer = generate_excel(row, current_date)
+        upload_report(row, excel_filename, buffer)
+        log_process_status(row, 'completed')
+        print(f"{row['REPORTNAME']} succeeded")
+    except Exception as e:
+        log_process_status(row, 'failed')
+        print(f"{row['REPORTNAME']} failed: {e}")
+
+def run_all_reports():
+    df = fetch_report_list()
+    current_hour = datetime.datetime.now().hour
+    for _, row in df.iterrows():
+        if should_run_report(row, current_hour) and 5 <= current_hour <= 19:
+            run_report(row)
+
+def run_single_report(report_name):
+    df = fetch_report_list()
+    df = df[df['REPORTNAME'] == report_name]
+    if not df.empty:
+        run_report(df.iloc[0])
+    else:
+        print(f"Report {report_name} not found.")
+
+# Example Usage:
+# run_all_reports()
+# run_single_report('SWC_FollowUp_ExpectedInvoice_Foundever')
+
+
+------------------------------------------------
+-----
+
 def fetch_report_list():
     fetch_sql = "SELECT * FROM TEAM_AUTO_DSS_RMKTOPS_P.PUB_RMKT_OPS.RMKT_REPORT_LIST_ITAB"
     cur.execute(fetch_sql)
