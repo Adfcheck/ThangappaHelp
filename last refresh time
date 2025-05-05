@@ -1,3 +1,17 @@
+I hope you're doing well.
+
+You may have received two similar email notifications earlier today. I’d like to clarify that the email I’m replying to now was triggered from our new platform (hosted on EKS) and is the correct and intended communication.
+
+The other email came from our legacy system (OpenShift), which is in the process of being decommissioned. Going forward, all notifications will be sent exclusively from the new EKS-based platform.
+
+We appreciate your understanding during this transition and are confident this upgrade will enhance reliability and performance.
+
+Please feel free to reach out if you have any questions.
+
+
+--------
+
+
 from datetime import datetime
 import pytz
 
