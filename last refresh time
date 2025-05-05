@@ -1,3 +1,14 @@
+
+I’m writing to provide a quick clarification regarding the notifications sent earlier today.
+
+At 4:45 PM EST, an email was triggered from our new platform (EKS). However, the attachment included in that email was unintentionally empty.
+
+To ensure you received the correct data without delay, we subsequently triggered the same notification via our legacy platform (OpenShift) at 4:55 PM EST, which included the complete and accurate attachment.
+
+We are actively reviewing the issue on the new platform to prevent recurrence. In the meantime, please refer to the 4:55 PM EST email for the correct information.
+
+Thank you for your understanding
+-----------
 I hope you're doing well.
 
 You may have received two similar email notifications earlier today. I’d like to clarify that the email I’m replying to now was triggered from our new platform (hosted on EKS) and is the correct and intended communication.
