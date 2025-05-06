@@ -1,4 +1,33 @@
 
+
+def log_update_to_snowflake(report_id, end_time, status, error_message, ERROR_IND=0):
+    """
+    Logs refresh details into Snowflake table.
+    """
+    insert_query = f"""
+    update TEAM_AUTO_DSS_RMKTOPS_P.CORE.RMKT_PROCESS_LOG_DETAILS
+    set status='{status}',
+        error_ind={ERROR_IND},
+        process_endtime='{end_time}',
+        log_details='{error_message}',
+        updatedby='system'
+    where log_id in (
+        select max(log_id)
+        from team_auto_dss_rmktops_p.PUB_RMKT_OPS.rmkt_process_log_details
+        where reportid={report_id}
+    )
+    """
+
+    conn = get_snowflake_connection()
+    cursor = conn.cursor()
+    cursor.execute(insert_query)
+    conn.commit()
+    print("Refresh log successfully added to Snowflake Nucleus table.")
+    cursor.close()
+    conn.close()
+
+
+------------
 I’m writing to provide a quick clarification regarding the notifications sent earlier today.
 
 At 4:45 PM EST, an email was triggered from our new platform (EKS). However, the attachment included in that email was unintentionally empty.
