@@ -1,3 +1,4 @@
+cleaned_file_name = re.sub(r'_YYYYMMDD\d{8}(?=\.\w+$)', '', file_name)
 
 
 def log_update_to_snowflake(report_id, end_time, status, error_message, ERROR_IND=0):
