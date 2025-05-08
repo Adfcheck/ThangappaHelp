@@ -1,6 +1,6 @@
 central = pytz.timezone('US/Central')
 eastern = pytz.timezone('US/Eastern')
-
+utc = pytz.utc
 start_time_raw = latest_refresh.get("STARTTIME", None)
 end_time_raw = latest_refresh.get("ENDTIME", None)
 
