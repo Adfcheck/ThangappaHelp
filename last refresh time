@@ -1,3 +1,19 @@
+central = pytz.timezone('US/Central')
+eastern = pytz.timezone('US/Eastern')
+
+start_time_raw = latest_refresh.get("STARTTIME", None)
+end_time_raw = latest_refresh.get("ENDTIME", None)
+
+if start_time_raw:
+    start_time = central.localize(datetime.fromisoformat(start_time_raw)).astimezone(eastern)
+else:
+    start_time = None
+
+if end_time_raw:
+    end_time = central.localize(datetime.fromisoformat(end_time_raw)).astimezone(eastern)
+else:
+    end_time = None
+------
 cleaned_file_name = re.sub(r'_YYYYMMDD\d{8}(?=\.\w+$)', '', file_name)
 cleaned_file_name = re.sub(r'_YYYYMMDD(?=\d{8}\.\w+$)', '', file_name)
 
