@@ -1,3 +1,27 @@
+
+from datetime import datetime
+import pytz
+
+# Sample UTC input strings
+start_time_utc_str = "2025-05-08 14:30:11.027"
+end_time_utc_str = "2025-05-08 14:30:50.760"
+
+# Define time zones
+utc = pytz.utc
+eastern = pytz.timezone("US/Eastern")
+
+# Parse and convert start time
+start_time_utc = datetime.strptime(start_time_utc_str, "%Y-%m-%d %H:%M:%S.%f").replace(tzinfo=utc)
+start_time_est = start_time_utc.astimezone(eastern)
+
+# Parse and convert end time
+end_time_utc = datetime.strptime(end_time_utc_str, "%Y-%m-%d %H:%M:%S.%f").replace(tzinfo=utc)
+end_time_est = end_time_utc.astimezone(eastern)
+
+print("Start Time EST:", start_time_est.strftime("%Y-%m-%d %H:%M:%S %Z"))
+print("End Time EST:", end_time_est.strftime("%Y-%m-%d %H:%M:%S %Z"))
+
+-------
 from datetime import datetime
 import pytz
 
