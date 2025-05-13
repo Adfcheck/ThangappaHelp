@@ -1,3 +1,39 @@
+
+digraph {
+	rankdir=TB
+	node [fontname=Arial]
+	Start [label=Start fillcolor="#b3e5fc" shape=ellipse style=filled]
+	GetReports [label="Get Report Names" fillcolor="#e1f5fe" shape=parallelogram style=filled]
+	CheckSchedule [label="Check Schedule Time" fillcolor="#ffe082" shape=diamond style=filled]
+	SkipOutsideWindow [label="Skip (Outside Schedule)" fillcolor="#ffccbc" shape=rectangle style=filled]
+	LoopReports [label="Loop through each Report" fillcolor="#dcedc8" shape=rectangle style=filled]
+	GetConfig [label="Fetch Report Config" fillcolor="#c5e1a5" shape=rectangle style=filled]
+	TriggerAPI [label="Trigger PBI Refresh API" fillcolor="#a5d6a7" shape=rectangle style=filled]
+	LogSuccess [label="Log: Success" fillcolor="#d7ccc8" shape=parallelogram style=filled]
+	LogFailure [label="Log: Failure after Max Attempts" fillcolor="#ef9a9a" shape=parallelogram style=filled]
+	Retry [label="Retry (Wait & Retry)" fillcolor="#fff59d" shape=rectangle style=filled]
+	Done [label=End fillcolor="#b3e5fc" shape=ellipse style=filled]
+	Start -> GetReports
+	GetReports -> CheckSchedule
+	CheckSchedule -> SkipOutsideWindow [label=No]
+	CheckSchedule -> LoopReports [label=Yes]
+	LoopReports -> GetConfig
+	GetConfig -> TriggerAPI
+	TriggerAPI -> LogSuccess [label=Success]
+	TriggerAPI -> Retry [label=Failed]
+	Retry -> TriggerAPI [label="Attempts left"]
+	Retry -> LogFailure [label="No attempts"]
+	LogSuccess -> Done
+	LogFailure -> Done
+	SkipOutsideWindow -> Done
+}
+---------------
+
+
+
+
+
+
 https://dreampuf.github.io/GraphvizOnline/
 
 digraph PBIRefreshFlow {
