@@ -1,0 +1,32 @@
+https://dreampuf.github.io/GraphvizOnline/
+
+digraph PBIRefreshFlow {
+    rankdir=LR;
+    node [shape=box, style=filled, fillcolor="#e0f7fa", fontname="Arial"];
+
+    Start [label="Start"]
+    GetReports [label="Get Report Names"]
+    CheckSchedule [label="Check Schedule Time"]
+    SkipOutsideWindow [label="Skip (Outside Schedule)"]
+    LoopReports [label="Loop through each Report"]
+    GetConfig [label="Fetch Report Config"]
+    TriggerAPI [label="Trigger PBI Refresh API"]
+    LogSuccess [label="Log: Success"]
+    LogFailure [label="Log: Failure after Max Attempts"]
+    Retry [label="Retry (Wait & Retry)"]
+    Done [label="End"]
+
+    Start -> GetReports
+    GetReports -> CheckSchedule
+    CheckSchedule -> SkipOutsideWindow [label="No"]
+    CheckSchedule -> LoopReports [label="Yes"]
+    LoopReports -> GetConfig
+    GetConfig -> TriggerAPI
+    TriggerAPI -> LogSuccess [label="Success"]
+    TriggerAPI -> Retry [label="Failed"]
+    Retry -> TriggerAPI [label="If attempts left"]
+    Retry -> LogFailure [label="If no attempts"]
+    LogSuccess -> Done
+    LogFailure -> Done
+    SkipOutsideWindow -> Done
+}
