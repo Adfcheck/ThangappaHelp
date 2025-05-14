@@ -1,3 +1,15 @@
+Process Duration (Minutes) = 
+VAR StartTime = SELECTEDVALUE(YourTableName[PROCESS_STARTTIME])
+VAR EndTime = SELECTEDVALUE(YourTableName[PROCESS_ENDTIME])
+RETURN
+IF (
+    NOT ISBLANK(StartTime) && NOT ISBLANK(EndTime),
+    DATEDIFF(StartTime, EndTime, MINUTE),
+    BLANK()
+)
+
+----------
+
 if DateTime.Date([PROCESS_ENDTIME]) = DateTime.Date(DateTime.LocalNow()) and
    DateTime.Date([PROCESS_STARTTIME]) = DateTime.Date(DateTime.LocalNow()) then
    Duration.TotalMinutes([PROCESS_ENDTIME] - [PROCESS_STARTTIME])
