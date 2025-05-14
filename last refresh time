@@ -1,3 +1,11 @@
+if DateTime.Date([PROCESS_ENDTIME]) = DateTime.Date(DateTime.LocalNow()) and
+   DateTime.Date([PROCESS_STARTTIME]) = DateTime.Date(DateTime.LocalNow()) then
+   Duration.TotalMinutes([PROCESS_ENDTIME] - [PROCESS_STARTTIME])
+else
+   null
+----------------------------------------------------------------------------
+
+
 Hello Divya,
 
 As part of the Pivot report EKS push to production, I have made a few changes in two views.
