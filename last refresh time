@@ -1,3 +1,23 @@
+Table =
+SUMMARIZE (
+    'Report details',
+    'Report details'[REPORTNAME],
+    "Max_EndTime", MAX('Report details'[PROCESS_ENDTIME]),
+    "SLA_Time", MAX('Report details'[REPORT_SLA]),
+    "slaHours",
+        VAR slaText = MAX('Report details'[REPORT_SLA])
+        RETURN
+            HOUR(
+                TIME(
+                    VALUE(LEFT(slaText, 2)),        -- Hours
+                    VALUE(MID(slaText, 4, 2)),      -- Minutes
+                    VALUE(MID(slaText, 7, 2))       -- Seconds
+                )
+            )
+)
+------
+
+
 Reports_Within_SLA =
 VAR SummaryTable =
     ADDCOLUMNS (
