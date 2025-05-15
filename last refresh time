@@ -1,20 +1,27 @@
-
-Reports_Within_SLA = 
+Reports_Within_SLA =
 VAR SummaryTable =
-    SUMMARIZE (
-        'YourTable',
-        'YourTable'[REPORTNAME],
-        "Max_EndTime", MAX('YourTable'[PROCESS_ENDTIME]),
-        "SLA_Time", MAX('YourTable'[REPORT_SLA])
+    ADDCOLUMNS (
+        SUMMARIZE (
+            'YourTable',
+            'YourTable'[REPORTNAME]
+        ),
+        "Max_EndTime", CALCULATE ( MAX ( 'YourTable'[PROCESS_ENDTIME] ) ),
+        "SLA_DateTime", CALCULATE ( MAX ( 'YourTable'[SLA_DateTime] ) )
     )
-
 RETURN
     COUNTROWS (
         FILTER (
             SummaryTable,
-            DATEDIFF ( [SLA_Time], [Max_EndTime], MINUTE ) <= 120
+            DATEDIFF ( [SLA_DateTime], [Max_EndTime], MINUTE ) <= 120
         )
     )
+---
+SLA_DateTime =
+VAR TimePart = TIMEVALUE('YourTable'[REPORT_SLA])
+VAR DatePart = 'YourTable'[PROCESS_SCHEDULEDATE]  -- Or use PROCESS_ENDDATE if not available
+RETURN
+    DATETIME ( YEAR(DatePart), MONTH(DatePart), DAY(DatePart), HOUR(TimePart), MINUTE(TimePart), SECOND(TimePart) )
+
 ---------------
 
 Report_Refresh_Summary = 
