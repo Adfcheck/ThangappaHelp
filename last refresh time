@@ -1,3 +1,56 @@
+Report_Refresh_Summary = 
+SUMMARIZE(
+    'YourTableName',
+    'YourTableName'[REPORTNAME],
+    "Total_Processes", COUNTROWS('YourTableName'),
+    "Completed_Processes", CALCULATE(COUNTROWS('YourTableName'), 'YourTableName'[STATUS] = "completed"),
+    "Progress", DIVIDE(
+        CALCULATE(COUNTROWS('YourTableName'), 'YourTableName'[STATUS] = "completed"),
+        COUNTROWS('YourTableName'),
+        0
+    ),
+    "SLA_Breached", 
+    IF(
+        SUMX('YourTableName', DATEDIFF('YourTableName'[PROCESS_STARTTIME], 'YourTableName'[PROCESS_ENDTIME], MINUTE)) >
+        AVERAGE('YourTableName'[REPORT_SLA_SLIGHT_DELAY]), 
+        "Yes", "No"
+    )
+)
+
+--------
+Total Processes = 
+COUNTROWS('YourTableName')
+----------
+
+Completed Processes = 
+CALCULATE(
+    COUNTROWS('YourTableName'),
+    'YourTableName'[STATUS] = "completed"
+)
+
+----------
+Refresh Progress % = 
+DIVIDE(
+    [Completed Processes],
+    [Total Processes],
+    0
+)
+--------------
+
+Total Duration (Min) = 
+SUMX(
+    'YourTableName',
+    DATEDIFF('YourTableName'[PROCESS_STARTTIME], 'YourTableName'[PROCESS_ENDTIME], MINUTE)
+)
+
+-------
+SLA Time (Min) = 
+AVERAGE('YourTableName'[REPORT_SLA_SLIGHT_DELAY])  -- or REPORT_SLA if it's in minutes
+
+SLA Breached = 
+IF([Total Duration (Min)] > [SLA Time (Min)], "Yes", "No")
+---------
+
 
 Subject: Request for Support in Updating/Cleaning Production Table for Power BI Report Refresh
 
