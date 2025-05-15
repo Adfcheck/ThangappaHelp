@@ -1,3 +1,22 @@
+
+Reports_Within_SLA = 
+VAR SummaryTable =
+    SUMMARIZE (
+        'YourTable',
+        'YourTable'[REPORTNAME],
+        "Max_EndTime", MAX('YourTable'[PROCESS_ENDTIME]),
+        "SLA_Time", MAX('YourTable'[REPORT_SLA])
+    )
+
+RETURN
+    COUNTROWS (
+        FILTER (
+            SummaryTable,
+            DATEDIFF ( [SLA_Time], [Max_EndTime], MINUTE ) <= 120
+        )
+    )
+---------------
+
 Report_Refresh_Summary = 
 SUMMARIZE(
     'YourTableName',
