@@ -1,3 +1,12 @@
+TimeTakenToRefresh =
+VAR TotalSeconds =
+    DATEDIFF('Report details'[PROCESS_STARTTIME], 'Report details'[PROCESS_ENDTIME], SECOND)
+VAR Minutes = INT(TotalSeconds / 60)
+VAR Seconds = MOD(TotalSeconds, 60)
+RETURN
+    FORMAT(Minutes, "00") & ":" & FORMAT(Seconds, "00")
+
+
 Note: All times in this report are in Eastern Standard Time (EST).
 
 
