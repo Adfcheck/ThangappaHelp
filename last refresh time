@@ -1,3 +1,9 @@
+Hi Mega and Team,
+
+Thank you for your support.
+I would like to update that the login issue has been resolved, and I am now able to access the system successfully.
+------
+
 TimeTakenToRefresh =
 VAR TotalSeconds =
     DATEDIFF('Report details'[PROCESS_STARTTIME], 'Report details'[PROCESS_ENDTIME], SECOND)
