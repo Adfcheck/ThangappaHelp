@@ -1,4 +1,17 @@
-Hi Mega and Team,
+
+
+TimeTakenToRefreshMeasure :=
+VAR StartTime = MIN('Report details'[PROCESS_STARTTIME])
+VAR EndTime = MAX('Report details'[PROCESS_ENDTIME])
+VAR TotalSeconds = DATEDIFF(StartTime, EndTime, SECOND)
+VAR Minutes = INT(TotalSeconds / 60)
+VAR Seconds = MOD(TotalSeconds, 60)
+RETURN
+    FORMAT(Minutes, "00") & ":" & FORMAT(Seconds, "00")
+
+
+
+---------Hi Mega and Team,
 
 Thank you for your support.
 I would like to update that the login issue has been resolved, and I am now able to access the system successfully.
