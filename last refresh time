@@ -1,4 +1,5 @@
-
+FLOOR(DATEDIFF('second', start_time, end_time) / 60) * 100 +
+    MOD(DATEDIFF('second', start_time, end_time), 60) AS diff_minsec_int------------
 
 TimeTakenToRefreshMeasure :=
 VAR StartTime = MIN('Report details'[PROCESS_STARTTIME])
