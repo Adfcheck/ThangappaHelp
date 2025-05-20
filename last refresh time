@@ -1,3 +1,10 @@
+ReportsBreachedSLA AS (
+    SELECT
+        COUNT(*) AS Breached_Report_Count
+    FROM SummaryTable
+    WHERE DATEDIFF(MINUTE, SLA_Time, Max_EndTime) > 120
+)
+-----
 FLOOR(DATEDIFF('second', start_time, end_time) / 60) * 100 +
     MOD(DATEDIFF('second', start_time, end_time), 60) AS diff_minsec_int------------
 
