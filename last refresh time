@@ -1,3 +1,17 @@
+
+Total Duration (MinSec Int) =
+SUMX (
+    'Todays Report details',
+    VAR StartTime = 'Todays Report details'[START_TIME]
+    VAR EndTime = 'Todays Report details'[END_TIME]
+    VAR DiffSec = DATEDIFF(StartTime, EndTime, SECOND)
+    VAR MinPart = INT(DiffSec / 60)
+    VAR SecPart = MOD(DiffSec, 60)
+    RETURN MinPart * 100 + SecPart
+)
+
+-----------
+
 ReportsBreachedSLA AS (
     SELECT
         COUNT(*) AS Breached_Report_Count
